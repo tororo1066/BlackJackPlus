@@ -69,7 +69,9 @@ class BJPGame : Thread() {
         data.mcid = p.name
         data.onetip = onetip
         data.coin = coin
+        data.initialcoin = coin
         data.initialbet = initialbet
+        data.bet = initialbet
         data.starter = starter
         playerData[p.uniqueId] = data
     }
@@ -198,6 +200,8 @@ class BJPGame : Thread() {
         startData.inv.setItem(17,clock)
         joinData.inv.setItem(17,clock)
 
+        allPlaySound(Sound.UI_BUTTON_CLICK,1f,2f)
+
         renderInventory()
     }
 
@@ -273,24 +277,32 @@ class BJPGame : Thread() {
         val startData = playerData.entries.first().value
         val joinData = playerData.entries.last().value
 
+        startData.through = false
+        joinData.through = false
+        val startBet = startData.bet
+        val joinBet = joinData.bet
+
+        startData.bet = startData.initialbet
+        joinData.bet = joinData.initialbet
+
         if (battle?:return true){
-            return if (joinData.coin - joinData.bet <= 0){
+            return if (joinData.coin - joinBet <= 0){
                 startData.coin += joinData.coin
                 joinData.coin = 0
                 false
             }else{
-                joinData.coin -= joinData.bet
-                startData.coin += joinData.bet
+                joinData.coin -= joinBet
+                startData.coin += joinBet
                 true
             }
         }else{
-            return if (startData.coin - startData.bet <= 0){
+            return if (startData.coin - startBet <= 0){
                 joinData.coin += startData.coin
                 startData.coin = 0
                 false
             }else{
-                startData.coin -= startData.bet
-                joinData.coin += startData.bet
+                startData.coin -= startBet
+                joinData.coin += startBet
                 true
             }
         }
@@ -359,8 +371,8 @@ class BJPGame : Thread() {
 
             if (time % 20 == 0){
                 broadcast(runCmd("§l${name}§aが§5§lBJP§aを募集中...残り${time}秒\n" +
-                        "§f/bjp join $name §e必要金額 ${BlackJackPlus.format(minmoney)}円\n" +
-                        "","/bjp join $name","§6またはここをクリック！"))
+                        "§f/bjp join $name §e必要金額 ${BlackJackPlus.format(minmoney)}円",
+                    "/bjp join $name","§6またはここをクリック！"))
             }
 
             sleep(1000)
@@ -408,7 +420,7 @@ class BJPGame : Thread() {
             var turn = firstturn
             fillAction(turn)
 
-
+            showCardSum()
 
             while (!startData.through || !joinData.through){
                 val turnData = playerData[turn]!!
@@ -452,9 +464,12 @@ class BJPGame : Thread() {
                 showCardSum()
 
                 if (turnData.action == PlayerData.Action.SPUSE){
+                    replaceAction(turn)
                     sleep(5000)
                     turnData.action = PlayerData.Action.Nothing
+                    playerData[turnData.enemy]!!.through = false
                     fillAction(turn)
+                    showCardSum()
                     continue
                 }
 
@@ -477,7 +492,7 @@ class BJPGame : Thread() {
 
             val gameEnd = endTwoTurn()
 
-            if (gameEnd?:draw() == true)win(startData.uuid) else win(joinData.uuid)
+            if (gameEnd == null) draw() else if (gameEnd) win(startData.uuid) else win(joinData.uuid)
 
             val later = gameLaterSetting(gameEnd)
 
@@ -487,7 +502,7 @@ class BJPGame : Thread() {
 
 
         }
-        
+
 
         allPlayerSend("§5===============結果===============")
         allPlayerSend("§e${startData.mcid}：${startData.coin}/${startData.initialcoin}枚")

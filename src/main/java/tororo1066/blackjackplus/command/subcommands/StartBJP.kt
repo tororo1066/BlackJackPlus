@@ -20,8 +20,8 @@ class StartBJP : CommandExecutor {
             return true
         }
 
-        val bet = args[1].toDouble()
-        if (CheckBet(bet).call() == -1.0){
+        val bet = CheckBet(args[1].toDouble()).call()
+        if (bet == -1.0){
             BlackJackPlus.sendMsg(sender,"§4賭け金は${BlackJackPlus.BJPConfig.getDouble("price.min")}~" +
                     "${BlackJackPlus.BJPConfig.getDouble("price.max")}円の間で、負の数で入力しないでください")
             return true
@@ -31,6 +31,8 @@ class StartBJP : CommandExecutor {
             BlackJackPlus.sendMsg(sender,"§4お金が足りません")
             return true
         }
+
+        BlackJackPlus.vault.withdraw(sender.uniqueId,bet)
 
         BlackJackPlus.bjpData[sender.uniqueId] = BJPGame()
         BlackJackPlus.bjpData[sender.uniqueId]!!.setGameConfig(BlackJackPlus.BJPConfig.getInt("gameconfig.round",3),BlackJackPlus.BJPConfig.getInt("gameconfig.clocktime",30))

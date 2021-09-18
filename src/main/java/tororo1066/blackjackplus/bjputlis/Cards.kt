@@ -22,7 +22,7 @@ object Cards {
         val deck = inv.getItem(18).itemStack?:return null
         val decklist = ArrayList<Int>()
         for (card in deck.itemMeta.persistentDataContainer.keys){
-            if (deck.itemMeta.persistentDataContainer[card, PersistentDataType.INTEGER] == 1) decklist.add(card.namespace.toInt())
+            if (deck.itemMeta.persistentDataContainer[card, PersistentDataType.INTEGER] == 1) decklist.add(card.key.toInt())
         }
         return decklist
     }
@@ -57,6 +57,75 @@ object Cards {
             playerData.inv.setItem(cardloc, generateCard(random))
             enemyData.inv.setItem(enemyLoc, generateCard(random))
         }
+
+        val item = playerData.inv.getItem(18).itemStack?:return false
+        val enemyItem = enemyData.inv.getItem(18).itemStack?:return false
+
+        val meta = item.itemMeta
+        val enemyMeta = enemyItem.itemMeta
+        meta.persistentDataContainer.set(NamespacedKey(BlackJackPlus.plugin,"$random"), PersistentDataType.INTEGER,0)
+        enemyMeta.persistentDataContainer.set(NamespacedKey(BlackJackPlus.plugin,"$random"), PersistentDataType.INTEGER,0)
+
+        item.itemMeta = meta
+        enemyItem.itemMeta = enemyMeta
+
+        playerData.inv.setItem(18,SInventoryItem(item).clickable(false))
+        enemyData.inv.setItem(18,SInventoryItem(enemyItem).clickable(false))
+
+
+
+        BlackJackPlus.bjpData[playerData.starter]?.allPlaySound(Sound.ITEM_BOOK_PAGE_TURN,2f,1f)
+
+        playerData.inv.renderInventory()
+        enemyData.inv.renderInventory()
+        return true
+    }
+
+    fun drawCard(playerData: BJPGame.PlayerData, card : Int): Boolean {
+        val inv = playerData.inv
+        val deck = checkdeck(playerData.inv)
+
+        if (deck == null){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§c山札が空です！") }
+            return false
+        }
+
+        if (!deck.contains(card)){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§c${card}は存在しません！") }
+            return false
+        }
+        val util = InventoryUtil(playerData)
+
+        val cardloc = util.checkPlayerCard()
+
+        if (cardloc == null){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くスペースがありません！") }
+            return false
+        }
+
+        val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
+        val enemyLoc = InventoryUtil(enemyData).checkEnemyCard()?:return false
+
+
+        playerData.inv.setItem(cardloc, generateCard(card))
+        enemyData.inv.setItem(enemyLoc, generateCard(card))
+
+
+        val item = playerData.inv.getItem(18).itemStack?:return false
+        val enemyItem = enemyData.inv.getItem(18).itemStack?:return false
+
+        val meta = item.itemMeta
+        val enemyMeta = enemyItem.itemMeta
+        meta.persistentDataContainer.set(NamespacedKey(BlackJackPlus.plugin,"$card"), PersistentDataType.INTEGER,0)
+        enemyMeta.persistentDataContainer.set(NamespacedKey(BlackJackPlus.plugin,"$card"), PersistentDataType.INTEGER,0)
+
+        item.itemMeta = meta
+        enemyItem.itemMeta = enemyMeta
+
+        playerData.inv.setItem(18,SInventoryItem(item).clickable(false))
+        enemyData.inv.setItem(18,SInventoryItem(enemyItem).clickable(false))
+
+
 
         BlackJackPlus.bjpData[playerData.starter]?.allPlaySound(Sound.ITEM_BOOK_PAGE_TURN,2f,1f)
 

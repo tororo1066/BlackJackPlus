@@ -92,7 +92,8 @@ public abstract class SInventory implements Listener {
     }
 
     public SInventory removeItem(int slot){
-        removeItem(new int[]{slot});
+        items.remove(slot);
+        if(activeInventory != null) activeInventory.setItem(slot, null);
         return this;
     }
 
@@ -121,6 +122,7 @@ public abstract class SInventory implements Listener {
         }
         return this;
     }
+
 
     public void renderInventory(){
         if(activeInventory == null){

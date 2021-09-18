@@ -38,6 +38,8 @@ class JoinBJP : CommandExecutor {
             return true
         }
 
+        BlackJackPlus.vault.withdraw(sender.uniqueId,BlackJackPlus.bjpData[uuid]!!.getNeedMoney())
+
         BlackJackPlus.bjpData[uuid]!!.addJoinPlayer(sender)
 
         return true

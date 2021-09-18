@@ -5,7 +5,9 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import tororo1066.blackjackplus.Utils.VaultAPI
+import tororo1066.blackjackplus.bjputlis.BJPListener
 import tororo1066.blackjackplus.bjputlis.Cards
+import tororo1066.blackjackplus.command.BJCommand
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -15,7 +17,7 @@ class BlackJackPlus : JavaPlugin() {
     companion object{
         val bjpData = HashMap<UUID,BJPGame>()
 
-        var pluginEnable = false
+        var pluginEnable = true
         var pluginPrefix = "§f[§5§lBJ§a§lP§f]§r"
         lateinit var BJPConfig : FileConfiguration
         lateinit var plugin : BlackJackPlus
@@ -44,6 +46,10 @@ class BlackJackPlus : JavaPlugin() {
         vault = VaultAPI()
         plugin = this
 
+        getCommand("bjp")?.setExecutor(BJCommand())
+        getCommand("bjp")?.tabCompleter = BJCommand()
+        server.pluginManager.registerEvents(BJPListener(),this)
+
         var loop = 1
         while (config.isSet("cardconfig.spcards.$loop")){
             if (config.getBoolean("cardconfig.spcards.$loop.enable")){
@@ -56,7 +62,7 @@ class BlackJackPlus : JavaPlugin() {
             enableSpCards[1] = 0
         }
 
-        for (card in config.getIntegerList("cardconig.cardcsm")){
+        for (card in config.getIntegerList("cardconfig.cardcsm")){
             cardCSM.add(card)
         }
 

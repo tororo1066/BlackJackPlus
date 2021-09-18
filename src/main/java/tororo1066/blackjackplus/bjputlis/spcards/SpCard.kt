@@ -3,6 +3,7 @@ package tororo1066.blackjackplus.bjputlis.spcards
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
+import org.bukkit.event.inventory.InventoryClickEvent
 import tororo1066.blackjackplus.BJPGame
 import tororo1066.blackjackplus.BlackJackPlus
 import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem
@@ -26,12 +27,12 @@ class SpCard : Callable<SInventoryItem>{
         this.id = id
     }
 
-    private fun generateSpCard(name : String, description : List<String>, id : Int, csm : Int){
+    private fun generateSpCard(name : String, description : List<String>, id : Int, csm : Int, event : (e : InventoryClickEvent)->Unit){
         this.name = name
         this.description = description
 
         spCard = SInventoryItem(SItemStack(spmaterial).
-        setDisplayName(name).setLore(description).setIntNBT(NamespacedKey(BlackJackPlus.plugin,"sp"),id).setCustomModelData(csm).build()).clickable(false)
+        setDisplayName(name).setLore(description).setIntNBT(NamespacedKey(BlackJackPlus.plugin,"sp"),id).setCustomModelData(csm).build()).clickable(false).setAsyncEvent { event.invoke(it) }
 
     }
 
@@ -41,13 +42,13 @@ class SpCard : Callable<SInventoryItem>{
             1->{
                 val random = Random.nextInt(3..7)
 
-                generateSpCard("§6ドロー$random",listOf("§e山札に残っている場合のみ、${random}のカードを引く。"),1,csm)
-                spCard = SInventoryItem(SItemStack(spCard.itemStack).setIntNBT(NamespacedKey(BlackJackPlus.plugin,"draw"),random).build())
-                spCard = spCard.setEvent { event.drawAny(it,playerData) }
+                generateSpCard("§6ドロー$random",listOf("§e山札に残っている場合のみ、${random}のカードを引く。"),1,csm) { event.drawAny(it,playerData) }
+                spCard = SInventoryItem(SItemStack(spCard.itemStack).setIntNBT(NamespacedKey(BlackJackPlus.plugin,"draw"),random).build()).clickable(false)
+                spCard = spCard.setAsyncEvent { event.drawAny(it,playerData) }
             }
 
             2->{
-                generateSpCard("§6リムーブ", listOf("§e相手が最後にひいたカードを山札に戻す。","§e相手の残りのカードが一枚だと使えない。"),2,csm)
+                generateSpCard("§6リムーブ", listOf("§e相手が最後にひいたカードを山札に戻す。","§e相手の残りのカードが一枚だと使えない。"),2,csm) { event.remove(it,playerData) }
 
             }
         }
@@ -59,7 +60,7 @@ class SpCard : Callable<SInventoryItem>{
         id = random
         callSpCard(playerData)
 
-        playerData.inv.setItem(InventoryUtil(playerData).checkPlayerPutSpCard()?:return,spCard)
+        playerData.inv.setItem(InventoryUtil(playerData).checkPlayerSpCard()?:return,spCard)
         playerData.inv.renderInventory()
         val gamedata = BlackJackPlus.bjpData[playerData.starter]?:return
         gamedata.allPlayerSend("§a${playerData.mcid}はSPカードを引いた")

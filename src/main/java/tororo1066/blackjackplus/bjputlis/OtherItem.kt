@@ -19,7 +19,7 @@ object OtherItem {
         }
     }
     fun noDrawCardButton(playerData: BJPGame.PlayerData): SInventoryItem {
-        return SInventoryItem(SItemStack(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("§a§lカードを引かない").build()).clickable(false).setEvent {
+        return SInventoryItem(SItemStack(Material.BLACK_STAINED_GLASS_PANE).setDisplayName("§a§lカードを引かない").build()).clickable(false).setEvent {
             playerData.action = BJPGame.PlayerData.Action.THROUGH
         }
     }

@@ -4,14 +4,14 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import tororo1066.coinflip.Utils.SInventory.SInventory;
-import tororo1066.coinflip.Utils.SInventory.SInventoryItem;
-import tororo1066.coinflip.Utils.SItemStack;
-import tororo1066.coinflip.Utils.SStringBuilder;
+import tororo1066.blackjackplus.Utils.SInventory.SInventory;
+import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem;
+import tororo1066.blackjackplus.Utils.SItemStack;
+import tororo1066.blackjackplus.Utils.SStringBuilder;
 
 import java.util.function.Consumer;
 
-public class ConfirmationMenu extends SInventory{
+public class ConfirmationMenu extends SInventory {
 
     Consumer<InventoryClickEvent> onConfirm;
     Consumer<InventoryClickEvent> onCancel;

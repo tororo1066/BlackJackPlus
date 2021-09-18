@@ -59,3 +59,7 @@ repositories {
 dependencies {
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}

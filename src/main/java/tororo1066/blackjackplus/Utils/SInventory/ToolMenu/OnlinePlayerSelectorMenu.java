@@ -3,10 +3,10 @@ package tororo1066.blackjackplus.Utils.SInventory.ToolMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import tororo1066.coinflip.CoinFlip;
-import tororo1066.coinflip.Utils.SInventory.SInventoryItem;
-import tororo1066.coinflip.Utils.SItemStack;
-import tororo1066.coinflip.Utils.SStringBuilder;
+import tororo1066.blackjackplus.BlackJackPlus;
+import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem;
+import tororo1066.blackjackplus.Utils.SItemStack;
+import tororo1066.blackjackplus.Utils.SStringBuilder;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -14,13 +14,13 @@ import java.util.function.Consumer;
 
 public class OnlinePlayerSelectorMenu extends LargeSInventoryMenu{
 
-    CoinFlip plugin;
+    BlackJackPlus plugin;
     Player player;
     Consumer<Player> onClick = null;
 
     ArrayList<UUID> exceptions = new ArrayList<>();
 
-    public OnlinePlayerSelectorMenu(Player p, CoinFlip plugin){
+    public OnlinePlayerSelectorMenu(Player p, BlackJackPlus plugin){
         super(new SStringBuilder().aqua().bold().text("オンラインプレイヤー一覧").build(), plugin);
         this.player = p;
         this.plugin = plugin;

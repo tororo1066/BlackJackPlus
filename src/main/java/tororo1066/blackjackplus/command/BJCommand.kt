@@ -6,13 +6,15 @@ import tororo1066.blackjackplus.Utils.SCommandRouter.SCommandArgumentType
 import tororo1066.blackjackplus.Utils.SCommandRouter.SCommandObject
 import tororo1066.blackjackplus.Utils.SCommandRouter.SCommandRouter
 import tororo1066.blackjackplus.command.subcommands.JoinBJP
+import tororo1066.blackjackplus.command.subcommands.OpenBJPMenu
 import tororo1066.blackjackplus.command.subcommands.StartBJP
+import tororo1066.blackjackplus.command.subcommands.SwitchMode
 
 class BJCommand : SCommandRouter() {
 
 
     init {
-        pluginPrefix = BlackJackPlus.pluginPrefix
+        pluginPrefix = "§5§lBlackJack§a§lPlus"
         registerEvents()
         registerCommands()
     }
@@ -35,6 +37,17 @@ class BJCommand : SCommandRouter() {
         addArgument(SCommandArgument().addAllowedType(SCommandArgumentType.ONLINE_PLAYER).addAlias("プレイヤー名")).
         addRequiredPermission("bjp.user").addExplanation("BJPの部屋に参加する").
         setExecutor(JoinBJP()))
+
+        addCommand(SCommandObject().
+        addArgument(SCommandArgument().addAllowedString("open")).
+        addRequiredPermission("bjp.user").addExplanation("BJPのインベントリを開きなおす").
+        setExecutor(OpenBJPMenu()))
+
+        addCommand(SCommandObject().
+        addArgument(SCommandArgument().addAllowedString("mode")).
+        addArgument(SCommandArgument().addAllowedType(SCommandArgumentType.BOOLEAN)).
+        addRequiredPermission("bjp.op").addExplanation("BJPのmodeを切り替える").
+        setExecutor(SwitchMode()))
     }
 
 
