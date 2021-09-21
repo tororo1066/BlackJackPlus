@@ -56,11 +56,7 @@ class SpCardEvent {
     }
 
     private fun breakSpCard(playerData: BJPGame.PlayerData, slot: Int){
-        val item = playerData.inv.getItem(slot)
-        if (item == null){
-            Bukkit.broadcastMessage(slot.toString())
-            return
-        }
+        val item = playerData.inv.getItem(slot)?:return
         val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
 
         when(getNBT(item,"sp")!!){
@@ -97,8 +93,8 @@ class SpCardEvent {
 
         }
 
-        playerData.inv.removeItem(getEnemySpLoc(slot))
-        enemyData.inv.removeItem(slot)
+        playerData.inv.removeItem(slot)
+        enemyData.inv.removeItem(getEnemySpLoc(slot))
 
         InventoryUtil(enemyData).sortSpPutCard()
 
@@ -233,13 +229,15 @@ class SpCardEvent {
         spTask(e, playerData)
 
         if (loc == null)loc = 35 else loc -= 1
-        if (enemyLoc == null)enemyLoc = 0 else enemyLoc -= 1
+        if (enemyLoc == null)enemyLoc = 35 else enemyLoc -= 1
 
         val card = getNBT(playerData.inv.getItem(loc),"card")!!
         val enemyCard = getNBT(enemyData.inv.getItem(enemyLoc),"card")!!
 
-        playerData.inv.setItem(loc,Cards.generateCard(card))
-        enemyData.inv.setItem(enemyLoc,Cards.generateCard(enemyCard))
+        playerData.inv.setItem(loc,Cards.generateCard(enemyCard))
+        enemyData.inv.setItem(enemyLoc,Cards.generateCard(card))
+        playerData.inv.setItem((InventoryUtil(playerData).checkEnemyCard()?:10)+1, Cards.generateCard(card))
+        enemyData.inv.setItem((InventoryUtil(playerData).checkEnemyCard()?:10)+1, Cards.generateCard(enemyCard))
 
 
         gameData.allPlayerSend("§d${playerData.mcid}と${enemyData.mcid}の最後にひいたカードは入れ替えられた")
@@ -535,7 +533,7 @@ class SpCardEvent {
         val enemyData = gameData.playerData[playerData.enemy]!!
 
         for (i in 15 downTo 11){
-            if (enemyData.inv.getItem(i) == null)continue
+            if (playerData.inv.getItem(i) == null)continue
             breakSpCard(playerData,i)
         }
 
@@ -563,7 +561,7 @@ class SpCardEvent {
         val enemyData = gameData.playerData[playerData.enemy]!!
 
         for (i in 15 downTo 11){
-            if (enemyData.inv.getItem(i) == null)continue
+            if (playerData.inv.getItem(i) == null)continue
             breakSpCard(playerData,i)
         }
 
