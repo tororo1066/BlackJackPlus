@@ -36,10 +36,15 @@ class BJPGame : Thread() {
         var coin = 0
         var initialbet = 0
         var bet = 0
+        var bjnumber = 21
 
         var action : Action = Action.Nothing
         var through = false
-        var bjnumber = 21
+
+        var canSpUse = true
+        var harvest = false
+        var death = false
+
         lateinit var inv : SInventory
 
 
@@ -110,7 +115,7 @@ class BJPGame : Thread() {
         })
     }
 
-    private fun renderInventory(){
+    fun renderInventory(){
         if (playerData.size != 2)return
         playerData.entries.first().value.inv.renderInventory()
         playerData.entries.last().value.inv.renderInventory()
@@ -135,21 +140,35 @@ class BJPGame : Thread() {
         return data.initialcoin * data.onetip
     }
 
-    private fun betUpdate(){
+    fun betUpdate(){
         if (playerData.size != 2)return
 
         val data = playerData.entries.first().value
         val enemyData = playerData.entries.last().value
 
-        data.inv.setItem(9,OtherItem.betNugget(data.mcid,data.bet,data.coin))
-        data.inv.setItem(26,OtherItem.betNugget(enemyData.mcid,enemyData.bet,enemyData.coin))
-        enemyData.inv.setItem(9,OtherItem.betNugget(data.mcid,data.bet,data.coin))
-        enemyData.inv.setItem(26,OtherItem.betNugget(enemyData.mcid,enemyData.bet,enemyData.coin))
+        if (data.bet < 0){
+            data.inv.setItem(9,OtherItem.betNugget(data.mcid,0,data.coin))
+            enemyData.inv.setItem(26,OtherItem.betNugget(data.mcid,0,data.coin))
+        }else{
+            data.inv.setItem(9,OtherItem.betNugget(data.mcid,data.bet,data.coin))
+            enemyData.inv.setItem(26,OtherItem.betNugget(data.mcid,data.bet,data.coin))
+        }
+
+        if (enemyData.bet < 0){
+            data.inv.setItem(26,OtherItem.betNugget(enemyData.mcid,0,enemyData.coin))
+            enemyData.inv.setItem(9,OtherItem.betNugget(enemyData.mcid,0,enemyData.coin))
+        }else{
+            data.inv.setItem(26,OtherItem.betNugget(enemyData.mcid,enemyData.bet,enemyData.coin))
+            enemyData.inv.setItem(9,OtherItem.betNugget(enemyData.mcid,enemyData.bet,enemyData.coin))
+        }
+
+
+
 
         renderInventory()
     }
 
-    private fun countCard(): Pair<Int, Int> {
+    fun countCard(): Pair<Int, Int> {
         if (playerData.size != 2)return Pair(0,0)
         val startData = playerData.entries.first().value
         val joinData = playerData.entries.last().value
@@ -225,7 +244,7 @@ class BJPGame : Thread() {
         return startCount > joinCount
     }
 
-    fun win(uuid: UUID){
+    private fun win(uuid: UUID){
         if (playerData.size != 2)return
 
         val startData = playerData.entries.first().value
@@ -248,7 +267,7 @@ class BJPGame : Thread() {
 
     }
 
-    fun draw(){
+    private fun draw(){
         if (playerData.size != 2)return
 
         val startData = playerData.entries.first().value
@@ -279,6 +298,14 @@ class BJPGame : Thread() {
 
         startData.through = false
         joinData.through = false
+        startData.bjnumber = 21
+        joinData.bjnumber = 21
+        startData.death = false
+        joinData.death = false
+        startData.harvest = false
+        joinData.harvest = false
+        startData.canSpUse = true
+        joinData.canSpUse = true
         val startBet = startData.bet
         val joinBet = joinData.bet
 
@@ -286,6 +313,7 @@ class BJPGame : Thread() {
         joinData.bet = joinData.initialbet
 
         if (battle?:return true){
+            if (joinBet <= 0)return true
             return if (joinData.coin - joinBet <= 0){
                 startData.coin += joinData.coin
                 joinData.coin = 0
@@ -296,6 +324,7 @@ class BJPGame : Thread() {
                 true
             }
         }else{
+            if (startBet <= 0)return true
             return if (startData.coin - startBet <= 0){
                 joinData.coin += startData.coin
                 startData.coin = 0
@@ -308,7 +337,7 @@ class BJPGame : Thread() {
         }
     }
 
-    fun invSetUp(first : Boolean){
+    private fun invSetUp(first : Boolean){
         if (playerData.size != 2)return
 
         val startData = playerData.entries.first().value
@@ -338,7 +367,7 @@ class BJPGame : Thread() {
 
             i = 36
             for (set in p2SaveList){
-                startData.inv.setItem(i,set)
+                joinData.inv.setItem(i,set)
                 i++
             }
         }else {

@@ -27,17 +27,22 @@ class StartBJP : CommandExecutor {
             return true
         }
 
-        if (BlackJackPlus.vault.getBalance(sender.uniqueId) < bet){
+        val coin = BlackJackPlus.BJPConfig.getInt("gameconfig.coin",10)
+
+
+        if (BlackJackPlus.vault.getBalance(sender.uniqueId)*coin < bet){
             BlackJackPlus.sendMsg(sender,"§4お金が足りません")
             return true
         }
 
-        BlackJackPlus.vault.withdraw(sender.uniqueId,bet)
+
+
+        BlackJackPlus.vault.withdraw(sender.uniqueId,bet*coin)
 
         BlackJackPlus.bjpData[sender.uniqueId] = BJPGame()
         BlackJackPlus.bjpData[sender.uniqueId]!!.setGameConfig(BlackJackPlus.BJPConfig.getInt("gameconfig.round",3),BlackJackPlus.BJPConfig.getInt("gameconfig.clocktime",30))
         BlackJackPlus.bjpData[sender.uniqueId]!!.
-        addPlayer(sender,bet,BlackJackPlus.BJPConfig.getInt("gameconfig.coin",10),BlackJackPlus.BJPConfig.getInt("gameconfig.bet",2),sender.uniqueId)
+        addPlayer(sender,bet,coin,BlackJackPlus.BJPConfig.getInt("gameconfig.bet",2),sender.uniqueId)
         BlackJackPlus.bjpData[sender.uniqueId]!!.start()
         return true
     }

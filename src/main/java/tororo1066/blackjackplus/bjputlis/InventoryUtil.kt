@@ -35,7 +35,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
     }
 
     fun checkPlayerPutSpCard(): Int?{
-        for (i in 29..33){
+        for (i in 20..24){
             if (playerData.inv.getItem(i) != null)continue
             return i
         }
@@ -69,7 +69,37 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
 
     }
 
-    fun deckset(set : Int){
+    fun sortSpPutCard(){
+        val itemList = ArrayList<SInventoryItem>()
+        val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
+        val enemyItemList = ArrayList<SInventoryItem>()
+        for (i in 20..24){
+            if (playerData.inv.getItem(i) == null)continue
+            itemList.add(playerData.inv.getItem(i))
+            playerData.inv.removeItem(i)
+        }
+
+        for (i in 15 downTo 11){
+            if (enemyData.inv.getItem(i) == null)continue
+            enemyItemList.add(enemyData.inv.getItem(i))
+            enemyData.inv.removeItem(i)
+        }
+
+        var i = 20
+        for (item in itemList){
+            playerData.inv.setItem(i,item)
+            i++
+        }
+
+        i = 15
+        for (item in enemyItemList){
+            enemyData.inv.setItem(i,item)
+            i--
+        }
+
+    }
+
+    fun deckSet(set : Int){
         val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
         val item = playerData.inv.getItem(18).itemStack?:return
         val enemyItem = enemyData.inv.getItem(18).itemStack?:return
