@@ -177,7 +177,7 @@ class SpCardEvent {
         enemyData.inv.removeItem(enemyLoc)
 
 
-        InventoryUtil(playerData).deckSet(card)
+        InventoryUtil(playerData).deckSet(card,false)
 
         gameData.allPlayerSend("§d${enemyData.mcid}の最後にひいたカードは山札に戻された")
 
@@ -206,7 +206,7 @@ class SpCardEvent {
         enemyData.inv.removeItem(enemyLoc)
 
 
-        InventoryUtil(playerData).deckSet(card)
+        InventoryUtil(playerData).deckSet(card,false)
 
         gameData.allPlayerSend("§d${playerData.mcid}の最後にひいたカードは山札に戻された")
     }
@@ -375,7 +375,7 @@ class SpCardEvent {
         playerData.inv.removeItem(loc)
         enemyData.inv.removeItem(enemyLoc)
 
-        InventoryUtil(playerData).deckSet(card)
+        InventoryUtil(playerData).deckSet(card,false)
 
         SpCard().putSpCard(playerData,10)
 
@@ -532,9 +532,8 @@ class SpCardEvent {
         val gameData = BlackJackPlus.bjpData[playerData.starter]!!
         val enemyData = gameData.playerData[playerData.enemy]!!
 
-        for (i in 15 downTo 11){
-            if (playerData.inv.getItem(i) == null)continue
-            breakSpCard(playerData,i)
+        while (playerData.inv.getItem(15) != null){
+            breakSpCard(playerData,15)
         }
 
         gameData.allPlayerSend("§d${enemyData.mcid}の出したSPカードは全て壊された")
@@ -560,9 +559,8 @@ class SpCardEvent {
         val gameData = BlackJackPlus.bjpData[playerData.starter]!!
         val enemyData = gameData.playerData[playerData.enemy]!!
 
-        for (i in 15 downTo 11){
-            if (playerData.inv.getItem(i) == null)continue
-            breakSpCard(playerData,i)
+        while (playerData.inv.getItem(15) != null){
+            breakSpCard(playerData,15)
         }
 
         SpCard().putSpCard(playerData,20)

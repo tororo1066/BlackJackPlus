@@ -99,15 +99,15 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
 
     }
 
-    fun deckSet(set : Int){
+    fun deckSet(set : Int, remove : Boolean): Boolean {
         val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
-        val item = playerData.inv.getItem(18).itemStack?:return
-        val enemyItem = enemyData.inv.getItem(18).itemStack?:return
+        val item = playerData.inv.getItem(18).itemStack?:return false
+        val enemyItem = enemyData.inv.getItem(18).itemStack?:return false
 
         val meta = item.itemMeta
         val enemyMeta = enemyItem.itemMeta
-        meta.persistentDataContainer.set(NamespacedKey(BlackJackPlus.plugin,"$set"), PersistentDataType.INTEGER,0)
-        enemyMeta.persistentDataContainer.set(NamespacedKey(BlackJackPlus.plugin,"$set"), PersistentDataType.INTEGER,0)
+        meta.persistentDataContainer.set(NamespacedKey(BlackJackPlus.plugin,"$set"), PersistentDataType.INTEGER,if (remove) 0 else 1)
+        enemyMeta.persistentDataContainer.set(NamespacedKey(BlackJackPlus.plugin,"$set"), PersistentDataType.INTEGER,if (remove) 0 else 1)
 
         item.itemMeta = meta
         enemyItem.itemMeta = enemyMeta
@@ -117,6 +117,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
 
         playerData.inv.renderInventory()
         enemyData.inv.renderInventory()
+        return true
     }
 
 
