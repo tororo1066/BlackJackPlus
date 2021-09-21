@@ -15,7 +15,7 @@ import tororo1066.blackjackplus.bjputlis.spcards.SpCard
 object Cards {
 
 
-    private val cardmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardmaterial")?:"PAPER")
+    private val cardmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardconfig.cardmaterial")?:"PAPER")
 
 
     fun checkdeck(inv : SInventory): ArrayList<Int>? {
@@ -49,7 +49,7 @@ object Cards {
             Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くスペースがありません！") }
             return false
         }
-        if (canDrawSp && Math.random() <= BlackJackPlus.BJPConfig.getDouble("gameconfig.spdrawchance")){
+        if (canDrawSp && Math.random() >= BlackJackPlus.BJPConfig.getDouble("gameconfig.spdrawchance")){
             SpCard().drawSpCard(playerData)
         }
 

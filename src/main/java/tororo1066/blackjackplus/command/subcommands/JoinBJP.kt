@@ -33,6 +33,13 @@ class JoinBJP : CommandExecutor {
             return true
         }
 
+        for (data in BlackJackPlus.bjpData){
+            if (data.value.playerData.containsKey(sender.uniqueId)){
+                BlackJackPlus.sendMsg(sender,"§4ゲームに参加中です")
+                return true
+            }
+        }
+
         if (BlackJackPlus.vault.getBalance(sender.uniqueId) < BlackJackPlus.bjpData[uuid]!!.getNeedMoney()){
             BlackJackPlus.sendMsg(sender,"§4お金が足りません")
             return true

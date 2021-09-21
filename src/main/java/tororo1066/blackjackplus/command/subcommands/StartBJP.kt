@@ -20,6 +20,13 @@ class StartBJP : CommandExecutor {
             return true
         }
 
+        for (data in BlackJackPlus.bjpData){
+            if (data.value.playerData.containsKey(sender.uniqueId)){
+                BlackJackPlus.sendMsg(sender,"§4ゲームに参加中です")
+                return true
+            }
+        }
+
         val bet = CheckBet(args[1].toDouble()).call()
         if (bet == -1.0){
             BlackJackPlus.sendMsg(sender,"§4賭け金は${BlackJackPlus.BJPConfig.getDouble("price.min")}~" +

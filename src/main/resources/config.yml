@@ -13,9 +13,9 @@ gameconfig:
 
 
 cardconfig:
-  spcardmaterial: PAPER
-  cardmaterial: PAPER
-  invisiblecsm: 0
+  spcardmaterial: SPRUCE_SAPLING
+  cardmaterial: SPRUCE_SAPLING
+  invisiblecsm: 12
 
   cardcsm:
     - 1
@@ -30,55 +30,80 @@ cardconfig:
     - 10
     - 11
 
+  draw:
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+
   spcards:
     1:
       enable: true
       csm: 0
     2:
       enable: true
-      csm: 0
+      csm: 33
     3:
       enable: true
-      csm: 0
+      csm: 34
     4:
       enable: true
-      csm: 0
+      csm: 25
     5:
       enable: true
-      csm: 0
+      csm: 31
     6:
       enable: true
-      csm: 0
+      csm: 32
     7:
       enable: true
-      csm: 0
+      csm: 39
     8:
       enable: true
-      csm: 0
+      csm: 13
     9:
       enable: true
-      csm: 0
+      csm: 14
     10:
       enable: true
-      csm: 0
+      csm: 15
     11:
       enable: true
-      csm: 0
+      csm: 35
     12:
       enable: true
-      csm: 0
+      csm: 36
     13:
       enable: true
-      csm: 0
+      csm: 37
     14:
       enable: true
-      csm: 0
+      csm: 38
     15:
       enable: true
-      csm: 0
+      csm: 26
     16:
       enable: true
-      csm: 0
+      csm: 27
     17:
       enable: true
-      csm: 0
+      csm: 28
+    18:
+      enable: true
+      csm: 17
+    19:
+      enable: true
+      csm: 18
+    20:
+      enable: true
+      csm: 19
+    21:
+      enable: true
+      csm: 30
+    22:
+      enable: true
+      csm: 29
+    23:
+      enable: true
+      csm: 16

@@ -19,7 +19,7 @@ class SpCard : Callable<SInventoryItem>{
     lateinit var spCard : SInventoryItem
     lateinit var name : String
     lateinit var description : List<String>
-    private val spmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("spcardmaterial")?:"PAPER")
+    private val spmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardconfig.spcardmaterial")?:"PAPER")
     val event = SpCardEvent()
 
     constructor()
@@ -42,7 +42,7 @@ class SpCard : Callable<SInventoryItem>{
             1->{
                 val random = Random.nextInt(3..7)
 
-                generateSpCard("§6ドロー$random",listOf("§e山札に残っている場合のみ、${random}のカードを引く。"),id,csm) { event.drawAny(it,playerData) }
+                generateSpCard("§6ドロー$random",listOf("§e山札に残っている場合のみ、${random}のカードを引く。"),id,BlackJackPlus.drawAnyCSM[random-3]) { event.drawAny(it,playerData) }
                 spCard = SInventoryItem(SItemStack(spCard.itemStack).setIntNBT(NamespacedKey(BlackJackPlus.plugin,"draw"),random).build()).clickable(false)
                 spCard = spCard.setAsyncEvent { event.drawAny(it,playerData) }
             }
@@ -108,7 +108,7 @@ class SpCard : Callable<SInventoryItem>{
             }
 
             17->{
-                generateSpCard("§6ゴール24", listOf("§e場に置かれている間、勝利条件を24にする。","§e他の「ゴール」系カードが場にある場合、それを取り除く。"),id,csm) { event.goalAny(it,playerData,24) }
+                generateSpCard("§6ゴール27", listOf("§e場に置かれている間、勝利条件を27にする。","§e他の「ゴール」系カードが場にある場合、それを取り除く。"),id,csm) { event.goalAny(it,playerData,27) }
             }
 
             18->{

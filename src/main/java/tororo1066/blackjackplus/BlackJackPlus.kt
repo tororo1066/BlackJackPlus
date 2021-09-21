@@ -25,6 +25,7 @@ class BlackJackPlus : JavaPlugin() {
 
         val enableSpCards = HashMap<Int,Int>()
         val cardCSM = ArrayList<Int>()
+        val drawAnyCSM = ArrayList<Int>()
         var invisibleCardCSM = 0
 
         fun format(double: Double):String{
@@ -67,6 +68,12 @@ class BlackJackPlus : JavaPlugin() {
         }
 
         invisibleCardCSM = config.getInt("cardconfig.invisiblecsm")
+
+        if (config.getIntegerList("cardconfig.draw").size != 5){
+            drawAnyCSM.addAll(mutableListOf(0,0,0,0,0))
+        }else{
+            drawAnyCSM.addAll(config.getIntegerList("cardconfig.draw"))
+        }
 
     }
 }

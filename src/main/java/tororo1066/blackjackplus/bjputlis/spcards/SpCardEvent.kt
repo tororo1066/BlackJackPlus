@@ -46,11 +46,11 @@ class SpCardEvent {
 
     private fun getEnemySpLoc(loc : Int): Int {
         when(loc){
-            20-> return 15
-            21-> return 14
-            22-> return 13
-            23-> return 12
-            24-> return 11
+            15-> return 20
+            14-> return 21
+            13-> return 22
+            12-> return 23
+            11-> return 24
         }
         return 0
     }
@@ -237,7 +237,7 @@ class SpCardEvent {
         playerData.inv.setItem(loc,Cards.generateCard(enemyCard))
         enemyData.inv.setItem(enemyLoc,Cards.generateCard(card))
         playerData.inv.setItem((InventoryUtil(playerData).checkEnemyCard()?:10)+1, Cards.generateCard(card))
-        enemyData.inv.setItem((InventoryUtil(playerData).checkEnemyCard()?:10)+1, Cards.generateCard(enemyCard))
+        enemyData.inv.setItem((InventoryUtil(enemyData).checkEnemyCard()?:10)+1, Cards.generateCard(enemyCard))
 
 
         gameData.allPlayerSend("§d${playerData.mcid}と${enemyData.mcid}の最後にひいたカードは入れ替えられた")
