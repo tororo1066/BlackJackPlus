@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import tororo1066.blackjackplus.BlackJackPlus
 
+//モード切替 権限：bjp.op
 class SwitchMode : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
 

@@ -8,8 +8,8 @@ import tororo1066.blackjackplus.BJPGame
 import tororo1066.blackjackplus.BlackJackPlus
 import tororo1066.blackjackplus.bjputlis.CheckBet
 
-//部屋作成 権限：bjp.user
-class StartBJP : CommandExecutor {
+//カスタム部屋作成 権限：bjp.custom
+class CustomStartBJP : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (!BlackJackPlus.pluginEnable){
             BlackJackPlus.sendMsg(sender,"§4は現在停止中です")
@@ -28,29 +28,37 @@ class StartBJP : CommandExecutor {
             }
         }
 
-        val bet = CheckBet(args[1].toDouble()).call()
-        if (bet == -1.0){
+        val round = args[2].toInt()
+        val coin = args[3].toInt()
+        val bet = args[4].toInt()
+        val time = args[5].toInt()
+
+        if (round !in 1..10 || coin !in 5..30 || bet !in 1..10 || time !in 3..60){
+            BlackJackPlus.sendMsg(sender,"§a/bjp custom [チップ1枚当たりの金額] [ラウンド数(1~10)] [チップ数(5~30)] [初期ベット数(1~10)] [1ターンの時間(3~60)]")
+        }
+
+        val tip = CheckBet(args[1].toDouble()).call()
+        if (tip == -1.0){
             BlackJackPlus.sendMsg(sender,"§4賭け金は${BlackJackPlus.BJPConfig.getDouble("price.min")}~" +
                     "${BlackJackPlus.BJPConfig.getDouble("price.max")}円の間で、負の数で入力しないでください")
             return true
         }
 
-        val coin = BlackJackPlus.BJPConfig.getInt("gameconfig.coin",10)
 
 
-        if (BlackJackPlus.vault.getBalance(sender.uniqueId) < bet*coin){
+        if (BlackJackPlus.vault.getBalance(sender.uniqueId) < tip*coin){
             BlackJackPlus.sendMsg(sender,"§4お金が足りません")
             return true
         }
 
 
 
-        BlackJackPlus.vault.withdraw(sender.uniqueId,bet*coin)
+        BlackJackPlus.vault.withdraw(sender.uniqueId,tip*coin)
 
         BlackJackPlus.bjpData[sender.uniqueId] = BJPGame()
-        BlackJackPlus.bjpData[sender.uniqueId]!!.setGameConfig(BlackJackPlus.BJPConfig.getInt("gameconfig.round",3),BlackJackPlus.BJPConfig.getInt("gameconfig.clocktime",30))
+        BlackJackPlus.bjpData[sender.uniqueId]!!.setGameConfig(round,time)
         BlackJackPlus.bjpData[sender.uniqueId]!!.
-        addPlayer(sender,bet,coin,BlackJackPlus.BJPConfig.getInt("gameconfig.bet",2),sender.uniqueId)
+        addPlayer(sender,tip,coin, bet,sender.uniqueId)
         BlackJackPlus.bjpData[sender.uniqueId]!!.start()
         return true
     }

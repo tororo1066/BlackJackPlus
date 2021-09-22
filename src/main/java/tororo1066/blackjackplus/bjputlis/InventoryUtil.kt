@@ -10,6 +10,7 @@ import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem
 
 class InventoryUtil(val playerData: BJPGame.PlayerData) {
 
+    //プレイヤーの手札位置確認
     fun checkPlayerCard(): Int? {
         for (i in 28..35){
             if (playerData.inv.getItem(i) != null)continue
@@ -18,6 +19,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
         return null
     }
 
+    //敵の手札位置確認
     fun checkEnemyCard(): Int? {
         for (i in 7 downTo 0){
             if (playerData.inv.getItem(i) != null)continue
@@ -26,6 +28,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
         return null
     }
 
+    //プレイヤーのspカード位置確認
     fun checkPlayerSpCard(): Int?{
         for (i in 36..44){
             if (playerData.inv.getItem(i) != null)continue
@@ -34,6 +37,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
         return null
     }
 
+    //プレイヤーのspカード置き位置確認
     fun checkPlayerPutSpCard(): Int?{
         for (i in 20..24){
             if (playerData.inv.getItem(i) != null)continue
@@ -42,6 +46,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
         return null
     }
 
+    //敵のspカード置き位置確認
     fun checkEnemyPutSpCard(): Int?{
         for (i in 15 downTo 11){
             if (playerData.inv.getItem(i) != null)continue
@@ -51,6 +56,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
     }
 
 
+    //spカードのソート
     fun sortSpCard(){
         val itemList = ArrayList<SInventoryItem>()
         for (i in 36..44){
@@ -69,6 +75,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
 
     }
 
+    //場に出てるspカードのソート
     fun sortSpPutCard(){
         val itemList = ArrayList<SInventoryItem>()
         val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
@@ -99,6 +106,7 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
 
     }
 
+    //山札に戻す(消す)
     fun deckSet(set : Int, remove : Boolean): Boolean {
         val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
         val item = playerData.inv.getItem(18).itemStack?:return false

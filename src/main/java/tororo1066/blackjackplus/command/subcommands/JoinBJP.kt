@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import tororo1066.blackjackplus.BlackJackPlus
 
+//部屋参加 権限：bjp.user
 class JoinBJP : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

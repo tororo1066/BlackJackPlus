@@ -9,11 +9,10 @@ import tororo1066.blackjackplus.BlackJackPlus
 import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem
 import tororo1066.blackjackplus.Utils.SItemStack
 import tororo1066.blackjackplus.bjputlis.InventoryUtil
-import java.util.concurrent.Callable
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-class SpCard : Callable<SInventoryItem>{
+class SpCard {
 
     var id : Int = 0
     lateinit var spCard : SInventoryItem
@@ -22,11 +21,7 @@ class SpCard : Callable<SInventoryItem>{
     private val spmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardconfig.spcardmaterial")?:"PAPER")
     val event = SpCardEvent()
 
-    constructor()
-    constructor(id : Int){
-        this.id = id
-    }
-
+    //spカード生成処理
     private fun generateSpCard(name : String, description : List<String>, id : Int, csm : Int, event : (e : InventoryClickEvent)->Unit){
         this.name = name
         this.description = description
@@ -36,10 +31,11 @@ class SpCard : Callable<SInventoryItem>{
 
     }
 
+    //spカードを呼ぶ処理
     private fun callSpCard(playerData: BJPGame.PlayerData){
         val csm = BlackJackPlus.enableSpCards[id]!!
         when(id){
-            1->{
+            1->{//ドローだけめんどくさい
                 val random = Random.nextInt(3..7)
 
                 generateSpCard("§6ドロー$random",listOf("§e山札に残っている場合のみ、${random}のカードを引く。"),id,BlackJackPlus.drawAnyCSM[random-3]) { event.drawAny(it,playerData) }
@@ -133,12 +129,12 @@ class SpCard : Callable<SInventoryItem>{
 
             23->{
                 generateSpCard("§6デスぺレーション", listOf("§e場に置かれている間、互いの賭け数が100上がる。","§eまた、相手はカードを引けない。"),id,csm) { event.desperation(it,playerData) }
-
             }
         }
 
     }
 
+    //spカードを引く処理
     fun drawSpCard(playerData: BJPGame.PlayerData){
         val random = BlackJackPlus.enableSpCards.keys.random()
         id = random
@@ -152,6 +148,7 @@ class SpCard : Callable<SInventoryItem>{
 
     }
 
+    //spカードを置く処理
     fun putSpCard(playerData: BJPGame.PlayerData, id : Int){
         val loc = InventoryUtil(playerData).checkPlayerPutSpCard() ?: return
         this.id = id
@@ -164,28 +161,6 @@ class SpCard : Callable<SInventoryItem>{
         gamedata.renderInventory()
 
     }
-
-
-    @JvmName("getId1")
-    fun getId(): Int {
-        return id
-    }
-
-    @JvmName("getName1")
-    fun getName(): String {
-        return name
-    }
-
-    @JvmName("getDescription1")
-    fun getDescription(): List<String> {
-        return description
-    }
-
-
-    override fun call(): SInventoryItem {
-        return spCard
-    }
-
 
 }
 

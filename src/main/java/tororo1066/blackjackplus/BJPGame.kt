@@ -9,6 +9,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.checkerframework.checker.nullness.qual.NonNull
+import tororo1066.blackjackplus.Utils.MySQL.MySQLAPI
 import tororo1066.blackjackplus.Utils.SInventory.SInventory
 import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem
 import tororo1066.blackjackplus.Utils.SItemStack
@@ -18,6 +19,8 @@ import tororo1066.blackjackplus.bjputlis.OtherItem
 import tororo1066.blackjackplus.bjputlis.spcards.SpCard
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -63,11 +66,13 @@ class BJPGame : Thread() {
 
     }
 
+    //ラウンド、時計設定
     fun setGameConfig(round : Int, clocktime : Int){
         this.round = round
         this.clocktime = clocktime
     }
 
+    //プレイヤー追加
     fun addPlayer(p : Player, onetip : Double, coin : Int, initialbet : Int, starter : UUID){
         val data = PlayerData()
         data.uuid = p.uniqueId
@@ -81,6 +86,7 @@ class BJPGame : Thread() {
         playerData[p.uniqueId] = data
     }
 
+    //参加側のプレイヤー追加処理
     fun addJoinPlayer(p : Player){
         val data = playerData.entries.first().value
         data.enemy = p.uniqueId
@@ -88,26 +94,31 @@ class BJPGame : Thread() {
         playerData.entries.last().value.enemy = data.uuid
     }
 
+    //ぶろーどきゃすと
     private fun broadcast(component : Component){
         Bukkit.broadcast(component, Server.BROADCAST_CHANNEL_USERS)
     }
 
+    //コマンドを実行できるテキストを作る
     private fun runCmd(s : String, cmd : String, hover : String): @NonNull Component {
         return text(s).clickEvent(ClickEvent.runCommand(cmd)).hoverEvent(HoverEvent.showText(text(hover))).asComponent()
     }
 
+    //部屋のプレイヤー全員にメッセージを送る
     fun allPlayerSend(msg : String){
         for (p in playerData.keys){
             Bukkit.getPlayer(p)?.let { BlackJackPlus.sendMsg(it,msg) }
         }
     }
 
+    //部屋のプレイヤー全員に音を送る
     fun allPlaySound(sound : Sound, volume : Float, pitch : Float){
         for (p in playerData.keys){
             Bukkit.getPlayer(p)?.location?.let { Bukkit.getPlayer(p)?.playSound(it,sound,volume,pitch) }
         }
     }
 
+    //runTask
     private fun runTask(unit : ()->Unit){
         Bukkit.getScheduler().runTask(BlackJackPlus.plugin, Runnable {
             unit.invoke()
@@ -115,12 +126,14 @@ class BJPGame : Thread() {
         })
     }
 
+    //inv読み込み
     fun renderInventory(){
         if (playerData.size != 2)return
         playerData.entries.first().value.inv.renderInventory()
         playerData.entries.last().value.inv.renderInventory()
     }
 
+    //カードを引く、カードを引かないをせっと
     private fun fillAction(uuid: UUID){
         if (!playerData.containsKey(uuid))return
         playerData[uuid]!!.inv.setItem(53,OtherItem.drawCardButton(playerData[uuid]!!))
@@ -128,6 +141,7 @@ class BJPGame : Thread() {
         playerData[uuid]!!.inv.renderInventory()
     }
 
+    //↑のを取り除く
     private fun replaceAction(uuid : UUID){
         if (!playerData.containsKey(uuid))return
         playerData[uuid]!!.inv.setItem(53, ItemStack(Material.AIR))
@@ -135,11 +149,13 @@ class BJPGame : Thread() {
         playerData[uuid]!!.inv.renderInventory()
     }
 
+    //必要な金額の取得
     fun getNeedMoney(): Double {
         val data = playerData.entries.first().value
         return data.initialcoin * data.onetip
     }
 
+    //ベット状況の更新
     fun betUpdate(){
         if (playerData.size != 2)return
 
@@ -162,12 +178,10 @@ class BJPGame : Thread() {
             enemyData.inv.setItem(9,OtherItem.betNugget(enemyData.mcid,enemyData.bet,enemyData.coin))
         }
 
-
-
-
         renderInventory()
     }
 
+    //カードを数える 募集者がfirstで参加者がsecond
     fun countCard(): Pair<Int, Int> {
         if (playerData.size != 2)return Pair(0,0)
         val startData = playerData.entries.first().value
@@ -188,6 +202,7 @@ class BJPGame : Thread() {
         return Pair(count,count2)
     }
 
+    //頭にカードの合計を反映させる
     private fun showCardSum(){
 
         val sum = countCard()
@@ -210,6 +225,7 @@ class BJPGame : Thread() {
         renderInventory()
     }
 
+    //時間のカウント
     private fun timeCount(time : Int){
         if (playerData.size != 2)return
         val clock = SInventoryItem(SItemStack(Material.CLOCK).setDisplayName("§6残り時間").setAmount(time).build()).clickable(false)
@@ -224,6 +240,7 @@ class BJPGame : Thread() {
         renderInventory()
     }
 
+    //二人のターンが終わったときにする処理 trueで募集者、falseで参加者の勝利、nullで引き分け
     private fun endTwoTurn(): Boolean? {
         if (playerData.size != 2)return null
         val count = countCard()
@@ -244,6 +261,7 @@ class BJPGame : Thread() {
         return startCount > joinCount
     }
 
+    //指定したプレイヤーを勝利にする
     private fun win(uuid: UUID){
         if (playerData.size != 2)return
 
@@ -267,6 +285,7 @@ class BJPGame : Thread() {
 
     }
 
+    //引き分けにする
     private fun draw(){
         if (playerData.size != 2)return
 
@@ -289,6 +308,7 @@ class BJPGame : Thread() {
         sleep(5000)
     }
 
+    //1ラウンドの最後に行う処理 初期化処理ともいう
     private fun gameLaterSetting(battle : Boolean?): Boolean {
 
         if (playerData.size != 2)return true
@@ -337,6 +357,7 @@ class BJPGame : Thread() {
         }
     }
 
+    //インベントリの用意
     private fun invSetUp(first : Boolean){
         if (playerData.size != 2)return
 
@@ -377,11 +398,35 @@ class BJPGame : Thread() {
 
     }
 
+    //dbに情報の保存
+    private fun savePlayerDataLog(uuid: UUID): Boolean {
+
+        val data = playerData[uuid]?:return false
+        val enemyData = playerData[data.enemy]!!
+        val result = if (data.coin == data.initialcoin) null else data.coin > enemyData.coin
+
+        val rs = BlackJackPlus.mysql.query("select * from bjp_player_log where uuid = '${data.uuid}'")
+        if (rs.size == 0){
+            if (!BlackJackPlus.mysql.execute(MySQLAPI.buildInsertQuery(hashMapOf(
+                    Pair("uuid",data.uuid),Pair("mcid",data.mcid),
+                    Pair("win",if (result == true) 1 else 0),Pair("draw",if (result == null) 1 else 0),Pair("lose",if (result == false) 1 else 0),
+                    Pair("collect",(data.coin - data.initialcoin)*data.onetip)
+                ),"bjp_player_log"))) return false
+        }else{
+            if (!BlackJackPlus.mysql.execute("update bjp_player_log set " +
+                        "mcid = '${data.mcid}', " +
+                        "win = win+${if (result == true) 1 else 0}, draw = draw+${if (result == null) 1 else 0}, lose = lose+${if (result == false) 1 else 0} " +
+                        "where uuid = '${data.uuid}'")) return false
+        }
+        return true
+    }
 
 
 
+    //メイン部分
     override fun run() {
 
+        val data = playerData.entries.first().value
         val name = playerData.entries.first().value.mcid
         val minmoney = playerData.entries.first().value.onetip * playerData.entries.first().value.coin
 
@@ -399,8 +444,8 @@ class BJPGame : Thread() {
 
 
             if (time % 20 == 0){
-                broadcast(runCmd("§l${name}§aが§5§lBJP§aを募集中...残り${time}秒\n" +
-                        "§f/bjp join $name §e必要金額 ${BlackJackPlus.format(minmoney)}円",
+                broadcast(runCmd("§l${name}§aが§5§lBJP§aを募集中...残り${time}秒 §f/bjp join $name §e必要金額 ${BlackJackPlus.format(minmoney)}円\n" +
+                        "§b部屋設定：チップ一枚当たりの賭け金：${data.onetip}円 ラウンド数：${round}回 チップ数：${data.initialcoin}枚 初期ベット数：${data.initialbet}枚 1ターンの時間：${clocktime}秒",
                     "/bjp join $name","§6またはここをクリック！"))
             }
 
@@ -541,6 +586,23 @@ class BJPGame : Thread() {
 
         BlackJackPlus.vault.deposit(startData.uuid,startData.coin * startData.onetip)
         BlackJackPlus.vault.deposit(joinData.uuid,joinData.coin * joinData.onetip)
+
+
+        val map = HashMap<String,Any?>()
+        map["startUUID"] = startData.uuid
+        map["startMCID"] = startData.mcid
+        map["joinUUID"] = joinData.uuid
+        map["joinMCID"] = joinData.mcid
+        map["tip"] = startData.onetip
+        map["round"] = round
+        map["coin"] = startData.initialcoin
+        map["bet"] = startData.initialbet
+        map["time"] = clocktime
+        map["startCoin"] = startData.coin
+        map["joinCoin"] = joinData.coin
+        BlackJackPlus.mysql.execute(MySQLAPI.buildInsertQuery(map,"bjp_log"))
+        savePlayerDataLog(startData.uuid)
+        savePlayerDataLog(joinData.uuid)
 
 
         BlackJackPlus.bjpData.remove(startData.uuid)

@@ -18,6 +18,7 @@ object Cards {
     private val cardmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardconfig.cardmaterial")?:"PAPER")
 
 
+    //山札確認
     fun checkdeck(inv : SInventory): ArrayList<Int>? {
         val deck = inv.getItem(18).itemStack?:return null
         val decklist = ArrayList<Int>()
@@ -27,6 +28,7 @@ object Cards {
         return decklist
     }
 
+    //通常時
     fun drawCard(playerData: BJPGame.PlayerData, canDrawSp : Boolean, invisible : Boolean): Boolean {
         val inv = playerData.inv
         val random = checkdeck(inv)?.random()
@@ -49,7 +51,7 @@ object Cards {
             Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くスペースがありません！") }
             return false
         }
-        if (canDrawSp && Math.random() <= BlackJackPlus.BJPConfig.getDouble("gameconfig.spdrawchance")){
+        if (canDrawSp && Math.random() >= BlackJackPlus.BJPConfig.getDouble("gameconfig.spdrawchance")){
             SpCard().drawSpCard(playerData)
         }
 
@@ -57,7 +59,7 @@ object Cards {
         val enemyLoc = InventoryUtil(enemyData).checkEnemyCard()?:return false
 
         if (invisible){
-            playerData.inv.setItem(cardloc,generateNullCard(random,true))
+            playerData.inv.setItem(cardloc, generateCard(random))
             enemyData.inv.setItem(enemyLoc, generateNullCard(random,false))
         }else{
             playerData.inv.setItem(cardloc, generateCard(random))
@@ -87,6 +89,7 @@ object Cards {
         return true
     }
 
+    //指定したカードを引く
     fun drawCard(playerData: BJPGame.PlayerData, card : Int): Boolean {
         if (playerData.death){
             Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くことを禁じられています！") }
@@ -143,10 +146,12 @@ object Cards {
         return true
     }
 
+    //カード生成
     fun generateCard(int : Int): SInventoryItem {
         return SInventoryItem(SItemStack(cardmaterial).setDisplayName("$int").setIntNBT(NamespacedKey(BlackJackPlus.plugin,"card"),int).setCustomModelData(BlackJackPlus.cardCSM[int-1]).build()).clickable(false)
     }
 
+    //見えないカード生成
     private fun generateNullCard(int : Int, show : Boolean): SInventoryItem {
         return if (show){
             SInventoryItem(SItemStack(cardmaterial).setDisplayName("$int").setIntNBT(NamespacedKey(BlackJackPlus.plugin,"card"),int).setCustomModelData(BlackJackPlus.invisibleCardCSM).build()).clickable(false)

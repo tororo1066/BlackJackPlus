@@ -1,9 +1,7 @@
 package tororo1066.blackjackplus.bjputlis
 
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import tororo1066.blackjackplus.BJPGame
@@ -13,6 +11,7 @@ import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem
 import tororo1066.blackjackplus.Utils.SItemStack
 import java.util.*
 
+//GUI作成
 class CreateGUI(playerData: BJPGame.PlayerData, time : Int) : SInventory("BJPTable",6,BlackJackPlus.plugin){
 
     /*
@@ -24,7 +23,6 @@ class CreateGUI(playerData: BJPGame.PlayerData, time : Int) : SInventory("BJPTab
     45 46 47 48 49 50 51 52 53
      */
 
-    //27 頭
 
 
     private fun createHead(uuid: UUID) : SInventoryItem{
@@ -50,9 +48,6 @@ class CreateGUI(playerData: BJPGame.PlayerData, time : Int) : SInventory("BJPTab
         setItem(17, SInventoryItem(SItemStack(Material.CLOCK).setDisplayName("§6残り時間").setAmount(time).build()).clickable(false))
 
         setItem(26, ItemStack(Material.GOLD_NUGGET))
-
-
-
 
     }
 }

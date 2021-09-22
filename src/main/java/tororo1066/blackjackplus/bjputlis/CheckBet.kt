@@ -4,6 +4,7 @@ import tororo1066.blackjackplus.BlackJackPlus
 import java.util.concurrent.Callable
 import kotlin.math.floor
 
+//賭け金チェック
 class CheckBet(private val bet : Double) : Callable<Double>{
 
     override fun call(): Double {

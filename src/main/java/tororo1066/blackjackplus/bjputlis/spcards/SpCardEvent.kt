@@ -16,15 +16,18 @@ import kotlin.random.Random
 
 class SpCardEvent {
 
+    //数字nbt取得
     private fun getNBT(item : SInventoryItem,nbt : String): Int? {
         return item.itemStack.itemMeta.persistentDataContainer[NamespacedKey(BlackJackPlus.plugin,nbt), PersistentDataType.INTEGER]
     }
 
+    //spカードを使える条件に当てはまっているか確認
     private fun isBJPTable(e : InventoryClickEvent, playerData: BJPGame.PlayerData): Boolean {
         return e.view.title == "BJPTable" && e.inventory.getItem(53) != null && playerData.canSpUse &&
                 e.slot !in 11..15 && e.slot !in 20..24
     }
 
+    //パーフェクトドロー、パーフェクトドロー+、アルティメットドローに使用
     private fun drawPerfect(playerData: BJPGame.PlayerData, log : Boolean): Boolean {
         val gamedata = BlackJackPlus.bjpData[playerData.starter]?:return false
         val deck = Cards.checkdeck(playerData.inv)?:return false
@@ -44,6 +47,7 @@ class SpCardEvent {
         return false
     }
 
+    //breakSpCardに使用
     private fun getEnemySpLoc(loc : Int): Int {
         when(loc){
             15-> return 20
@@ -55,6 +59,7 @@ class SpCardEvent {
         return 0
     }
 
+    //デストロイ、デストロイ+、デストロイ++に使用
     private fun breakSpCard(playerData: BJPGame.PlayerData, slot: Int){
         val item = playerData.inv.getItem(slot)?:return
         val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
@@ -104,7 +109,9 @@ class SpCardEvent {
     }
 
 
+    //spカード使用成功時の処理 必ず通す
     private fun spTask(e : InventoryClickEvent,playerData: BJPGame.PlayerData): SInventoryItem {
+        val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
         playerData.action = BJPGame.PlayerData.Action.SPUSE
         val slotitem = playerData.inv.getItem(e.slot)
         playerData.inv.removeItem(e.slot)
@@ -117,12 +124,19 @@ class SpCardEvent {
         InventoryUtil(playerData).sortSpCard()
         if (playerData.harvest) SpCard().drawSpCard(playerData)
         playerData.inv.renderInventory()
+        playerData.inv.close(Bukkit.getPlayer(playerData.uuid))
+        enemyData.inv.close(Bukkit.getPlayer(enemyData.uuid))
         Thread.sleep(3000)
+        Bukkit.getScheduler().runTask(BlackJackPlus.plugin, Runnable {
+            playerData.inv.open(Bukkit.getPlayer(playerData.uuid))
+            enemyData.inv.open(Bukkit.getPlayer(enemyData.uuid))
+        })
         if (slotitem != null)
             return slotitem
         return SInventoryItem(ItemStack(Material.AIR))
     }
 
+    //ドロー?
     fun drawAny(e : InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
         if (InventoryUtil(playerData).checkPlayerCard() == null){
@@ -155,6 +169,7 @@ class SpCardEvent {
 
     }
 
+    //リムーブ
     fun remove(e : InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -183,6 +198,7 @@ class SpCardEvent {
 
     }
 
+    //リターン
     fun reTurn(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -211,6 +227,7 @@ class SpCardEvent {
         gameData.allPlayerSend("§d${playerData.mcid}の最後にひいたカードは山札に戻された")
     }
 
+    //エクスチェンジ
     fun exchange(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -243,6 +260,7 @@ class SpCardEvent {
         gameData.allPlayerSend("§d${playerData.mcid}と${enemyData.mcid}の最後にひいたカードは入れ替えられた")
     }
 
+    //パーフェクトドロー
     fun perfectDraw(e : InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -264,6 +282,7 @@ class SpCardEvent {
         drawPerfect(playerData,true)
     }
 
+    //パーフェクトドロー+
     fun perfectDrawPlus(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -300,6 +319,7 @@ class SpCardEvent {
 
     }
 
+    //アルティメットドロー
     fun ultimateDraw(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -324,6 +344,7 @@ class SpCardEvent {
         SpCard().drawSpCard(playerData)
     }
 
+    //ベットアップ1、2
     fun betUp(e: InventoryClickEvent, playerData: BJPGame.PlayerData, level : Int){
         if (!isBJPTable(e,playerData))return
 
@@ -347,7 +368,7 @@ class SpCardEvent {
         gameData.allPlayerSend("§d${gameData.playerData[playerData.enemy]!!.mcid}の賭け数が${level}増加した")
     }
 
-
+    //ベットアップ2+
     fun betUp2Plus(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -387,6 +408,7 @@ class SpCardEvent {
 
     }
 
+    //シールド、シールド+
     fun shield(e: InventoryClickEvent, playerData: BJPGame.PlayerData, level: Int){
         if (!isBJPTable(e,playerData))return
 
@@ -410,6 +432,7 @@ class SpCardEvent {
 
     }
 
+    //spチェンジ、spチェンジ+
     fun spChange(e: InventoryClickEvent, playerData: BJPGame.PlayerData, isPlus : Boolean){
         if (!isBJPTable(e,playerData))return
 
@@ -449,6 +472,7 @@ class SpCardEvent {
 
     }
 
+    //ゴール17、24、27
     fun goalAny(e: InventoryClickEvent, playerData: BJPGame.PlayerData, goal : Int){
         if (!isBJPTable(e,playerData))return
 
@@ -498,6 +522,7 @@ class SpCardEvent {
 
     }
 
+    //デストロイ
     fun destroy(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
         var spLoc = InventoryUtil(playerData).checkEnemyPutSpCard()
@@ -518,6 +543,7 @@ class SpCardEvent {
         gameData.allPlayerSend("§d${enemyData.mcid}の最後に出したSPカードは壊された")
     }
 
+    //デストロイ+
     fun destroyPlus(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
         val spLoc = InventoryUtil(playerData).checkEnemyPutSpCard()
@@ -539,6 +565,7 @@ class SpCardEvent {
         gameData.allPlayerSend("§d${enemyData.mcid}の出したSPカードは全て壊された")
     }
 
+    //デストロイ++
     fun destroyPlusPlus(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
         val spLoc = InventoryUtil(playerData).checkEnemyPutSpCard()
@@ -569,6 +596,7 @@ class SpCardEvent {
         gameData.allPlayerSend("§d${enemyData.mcid}の出したSPカードは全て壊され、SPカードが使えなくなった")
     }
 
+    //ラブ・ユア・エネミー
     fun loveYourEnemy(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -607,6 +635,7 @@ class SpCardEvent {
         }
     }
 
+    //ハーヴェスト
     fun harvest(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
@@ -631,6 +660,7 @@ class SpCardEvent {
         gameData.allPlayerSend("§d${playerData.mcid}はSPカード使用時にSPカードを引くようになった")
     }
 
+    //デスぺレーション
     fun desperation(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 

@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import tororo1066.blackjackplus.BlackJackPlus
 
+//menuopen 権限：bjp.user
 class OpenBJPMenu : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (!BlackJackPlus.pluginEnable){

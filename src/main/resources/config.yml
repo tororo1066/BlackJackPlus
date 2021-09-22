@@ -1,7 +1,14 @@
-price:
-  enable: true
-  min: 1000.0
-  max: 100000.0
+mysql: #DB
+  host: localhost
+  port: 3306
+  user: root
+  pass: pass
+  db: bjp
+
+price: #1チップ当たりの賭け金の設定
+  enable: true #オンにするかオフにするか
+  min: 1000.0 #最低金額
+  max: 100000.0 #最高金額
 
 gameconfig:
   spdrawchance: 20.0
@@ -30,7 +37,7 @@ cardconfig:
     - 10
     - 11
 
-  draw:
+  draw: #ドロー3~7のcsm
     - 20
     - 21
     - 22
@@ -38,72 +45,72 @@ cardconfig:
     - 24
 
   spcards:
-    1:
+    1: #ドロー?
       enable: true
       csm: 0
-    2:
+    2: #リムーブ
       enable: true
       csm: 33
-    3:
+    3: #リターン
       enable: true
       csm: 34
-    4:
+    4: #エクスチェンジ
       enable: true
       csm: 25
-    5:
+    5: #パーフェクトドロー
       enable: true
       csm: 31
-    6:
+    6: #パーフェクトドロー+
       enable: true
       csm: 32
-    7:
+    7: #アルティメットドロー
       enable: true
       csm: 39
-    8:
+    8: # ベットアップ1
       enable: true
       csm: 13
-    9:
+    9: #ベットアップ2
       enable: true
       csm: 14
-    10:
+    10: #ベットアップ2+
       enable: true
       csm: 15
-    11:
+    11: #シールド
       enable: true
       csm: 35
-    12:
+    12: #シールド+
       enable: true
       csm: 36
-    13:
+    13: #spチェンジ
       enable: true
       csm: 37
-    14:
+    14: #spチェンジ+
       enable: true
       csm: 38
-    15:
+    15: #ゴール17
       enable: true
       csm: 26
-    16:
+    16: #ゴール24
       enable: true
       csm: 27
-    17:
+    17: #ゴール27
       enable: true
       csm: 28
-    18:
+    18: #デストロイ
       enable: true
       csm: 17
-    19:
+    19: #デストロイ+
       enable: true
       csm: 18
-    20:
+    20: #デストロイ++
       enable: true
       csm: 19
-    21:
+    21: #ラブ・ユア・エネミー
       enable: true
       csm: 30
-    22:
+    22: #ハーヴェスト
       enable: true
       csm: 29
-    23:
+    23: #デスぺレーション
       enable: true
       csm: 16
