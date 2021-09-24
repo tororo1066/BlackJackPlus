@@ -3,6 +3,9 @@ version: 1.0
 main: tororo1066.blackjackplus.BlackJackPlus
 api-version: 1.17
 
+softdepend:
+  - Man10CommonLibs
+
 commands:
   blackjackplus:
     aliases:

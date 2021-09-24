@@ -63,3 +63,14 @@ dependencies {
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
+
+task repackJars(type: Zip) {
+    from (zipTree('build/libs/BlackJackPlus-1.0-SNAPSHOT.jar')) {
+        exclude 'org/jetbrains/kotlin/**'
+    }
+
+    archiveName 'BlackJackPlusReplaceKotlin.jar'
+    destinationDir(file('build/libs/'))
+}
+
+compileKotlin.dependsOn repackJars

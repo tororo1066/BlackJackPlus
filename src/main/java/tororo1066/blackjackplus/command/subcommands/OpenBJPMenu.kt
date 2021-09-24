@@ -20,8 +20,12 @@ class OpenBJPMenu : CommandExecutor {
         }
         for (data in BlackJackPlus.bjpData){
             if (data.value.playerData.containsKey(sender.uniqueId)){
-                data.value.playerData[sender.uniqueId]!!.inv.open(sender)
-                return true
+                return try {
+                    data.value.playerData[sender.uniqueId]!!.inv.open(sender)
+                    true
+                }catch (e : UninitializedPropertyAccessException){
+                    true
+                }
             }
 
             BlackJackPlus.sendMsg(sender,"§4データが存在しません")
