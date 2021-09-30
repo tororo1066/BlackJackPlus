@@ -1,13 +1,12 @@
 package tororo1066.blackjackplus.command
 
-import tororo1066.blackjackplus.BlackJackPlus
 import tororo1066.blackjackplus.Utils.SCommandRouter.SCommandArgument
 import tororo1066.blackjackplus.Utils.SCommandRouter.SCommandArgumentType
 import tororo1066.blackjackplus.Utils.SCommandRouter.SCommandObject
 import tororo1066.blackjackplus.Utils.SCommandRouter.SCommandRouter
 import tororo1066.blackjackplus.command.subcommands.*
 
-class BJCommand : SCommandRouter() {
+class BJPCommand : SCommandRouter() {
 
 
     init {
@@ -79,6 +78,26 @@ class BJCommand : SCommandRouter() {
         addArgument(SCommandArgument().addAllowedString("wiki")).
         addRequiredPermission("bjp.user").addExplanation("wikiのリンクを出す").
         setExecutor(WikiCommand()))
+
+        //bjp log
+        addCommand(SCommandObject().
+        addArgument(SCommandArgument().addAllowedString("log")).
+        addRequiredPermission("bjp.log").addExplanation("戦績を確認する").
+        setExecutor(LogCommand()))
+
+        //bjp logop <name>
+        addCommand(SCommandObject().
+        addArgument(SCommandArgument().addAllowedString("logop")).
+        addArgument(SCommandArgument().addAllowedType(SCommandArgumentType.STRING).addAlias("プレイヤー名")).
+        addRequiredPermission("bjp.op").addExplanation("他のプレイヤーの戦績を確認する").
+        setExecutor(LogOp()))
+
+
+        //bjp ranking
+        addCommand(SCommandObject().
+        addArgument(SCommandArgument().addAllowedString("ranking")).
+        addRequiredPermission("bjp.log").addExplanation("獲得賞金ランキングを見る").
+        setExecutor(CollectRanking()))
     }
 
 

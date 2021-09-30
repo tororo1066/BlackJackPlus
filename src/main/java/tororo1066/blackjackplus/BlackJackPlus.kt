@@ -7,8 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import tororo1066.blackjackplus.Utils.MySQL.ThreadedMySQLAPI
 import tororo1066.blackjackplus.Utils.VaultAPI
 import tororo1066.blackjackplus.bjputlis.BJPListener
-import tororo1066.blackjackplus.bjputlis.Cards
-import tororo1066.blackjackplus.command.BJCommand
+import tororo1066.blackjackplus.command.BJPCommand
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -41,6 +40,7 @@ class BlackJackPlus : JavaPlugin() {
         fun sendMsg(p : CommandSender, msg : String){
             p.sendMessage(pluginPrefix + msg)
         }
+
 
         //コンフィグリロード /bjp reload
         fun reloadBJPConfig(){
@@ -115,8 +115,8 @@ class BlackJackPlus : JavaPlugin() {
         mysql = ThreadedMySQLAPI(this)
         plugin = this
 
-        getCommand("bjp")?.setExecutor(BJCommand())
-        getCommand("bjp")?.tabCompleter = BJCommand()
+        getCommand("bjp")?.setExecutor(BJPCommand())
+        getCommand("bjp")?.tabCompleter = BJPCommand()
         server.pluginManager.registerEvents(BJPListener(),this)
 
         reloadBJPConfig()

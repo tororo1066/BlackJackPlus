@@ -29,19 +29,19 @@ class SpCardEvent {
 
     //パーフェクトドロー、パーフェクトドロー+、アルティメットドローに使用
     private fun drawPerfect(playerData: BJPGame.PlayerData, log : Boolean): Boolean {
-        val gamedata = BlackJackPlus.bjpData[playerData.starter]?:return false
+        val gameData = BlackJackPlus.bjpData[playerData.starter]?:return false
         val deck = Cards.checkdeck(playerData.inv)?:return false
-        val count = gamedata.countCard()
+        val count = gameData.countCard()
         val playercount = if (playerData.uuid == playerData.starter) count.first else count.second
         for (i in playerData.bjnumber-playercount downTo 0){
             if (i == 0){
-                if (log) gamedata.allPlayerSend("§b適切なカードが見つからなかったので、カードは引かれなかった")
+                if (log) gameData.allPlayerSend("§b適切なカードが見つからなかったので、カードは引かれなかった")
                 return false
             }
             if (!deck.contains(i))continue
             Cards.drawCard(playerData,i)
-            gamedata.renderInventory()
-            gamedata.allPlayerSend("§d${playerData.mcid}は${i}のカードを引いた")
+            gameData.renderInventory()
+            gameData.allPlayerSend("§d${playerData.mcid}は${i}のカードを引いた")
             return true
         }
         return false
@@ -65,7 +65,7 @@ class SpCardEvent {
         val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
 
         when(getNBT(item,"sp")!!){
-            7->{
+            6->{
                 playerData.bet -= 5
             }
             8->{
@@ -139,6 +139,10 @@ class SpCardEvent {
     //ドロー?
     fun drawAny(e : InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
+        if (playerData.death){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くことを禁じられています！") }
+            return
+        }
         if (InventoryUtil(playerData).checkPlayerCard() == null){
             Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くスペースがありません！") }
             return
@@ -264,6 +268,11 @@ class SpCardEvent {
     fun perfectDraw(e : InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
 
+        if (playerData.death){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くことを禁じられています！") }
+            return
+        }
+
         val loc = InventoryUtil(playerData).checkPlayerCard()
 
         if (loc == null){
@@ -285,6 +294,11 @@ class SpCardEvent {
     //パーフェクトドロー+
     fun perfectDrawPlus(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
+
+        if (playerData.death){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くことを禁じられています！") }
+            return
+        }
 
         val loc = InventoryUtil(playerData).checkPlayerCard()
 
@@ -322,6 +336,12 @@ class SpCardEvent {
     //アルティメットドロー
     fun ultimateDraw(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
         if (!isBJPTable(e,playerData))return
+
+
+        if (playerData.death){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くことを禁じられています！") }
+            return
+        }
 
         val loc = InventoryUtil(playerData).checkPlayerCard()
 
@@ -602,6 +622,7 @@ class SpCardEvent {
 
         val loc = InventoryUtil(playerData).checkEnemyCard()
 
+
         if (loc == null){
             Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くスペースがありません！") }
             return
@@ -613,10 +634,17 @@ class SpCardEvent {
             return
         }
 
-        spTask(e, playerData)
-
         val gameData = BlackJackPlus.bjpData[playerData.starter]!!
         val enemyData = gameData.playerData[playerData.enemy]!!
+
+        if (enemyData.death){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§c相手はカードを引くことを禁じられています！") }
+            return
+        }
+
+        spTask(e, playerData)
+
+
 
         if (!drawPerfect(enemyData,false)){
             for (int in 1..12){
@@ -629,7 +657,7 @@ class SpCardEvent {
                 Cards.drawCard(enemyData,int)
                 gameData.renderInventory()
 
-                gameData.allPlayerSend("§d${playerData.mcid}は${int}のカードを引いた")
+                gameData.allPlayerSend("§d${enemyData.mcid}は${int}のカードを引いた")
                 break
             }
         }

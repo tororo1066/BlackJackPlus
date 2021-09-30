@@ -30,6 +30,10 @@ object Cards {
 
     //通常時
     fun drawCard(playerData: BJPGame.PlayerData, canDrawSp : Boolean, invisible : Boolean): Boolean {
+        if (playerData.death){
+            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くことを禁じられています！") }
+            return false
+        }
         val inv = playerData.inv
         val random = checkdeck(inv)?.random()
         val count = BlackJackPlus.bjpData[playerData.starter]!!.countCard()
@@ -91,10 +95,6 @@ object Cards {
 
     //指定したカードを引く
     fun drawCard(playerData: BJPGame.PlayerData, card : Int): Boolean {
-        if (playerData.death){
-            Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くことを禁じられています！") }
-            return false
-        }
         val deck = checkdeck(playerData.inv)
 
         if (deck == null){
