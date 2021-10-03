@@ -415,7 +415,7 @@ class BJPGame : Thread() {
         }else{
             if (!BlackJackPlus.mysql.execute("update bjp_player_log set " +
                         "mcid = '${data.mcid}', " +
-                        "win = win+${if (result == true) 1 else 0}, draw = draw+${if (result == null) 1 else 0}, lose = lose+${if (result == false) 1 else 0} " +
+                        "win = win+${if (result == true) 1 else 0}, draw = draw+${if (result == null) 1 else 0}, lose = lose+${if (result == false) 1 else 0}, collect = collect+${(data.coin-data.initialcoin) * data.onetip} " +
                         "where uuid = '${data.uuid}'")) return false
         }
         return true
@@ -582,6 +582,14 @@ class BJPGame : Thread() {
         allPlayerSend("§e${startData.mcid}：${startData.coin}/${startData.initialcoin}枚")
         allPlayerSend("§e${joinData.mcid}：${joinData.coin}/${joinData.initialcoin}枚")
         allPlayerSend("§5===============結果===============")
+
+        val startUUID = startData.uuid
+        val joinUUID = joinData.uuid
+        runTask {
+            Bukkit.getPlayer(startUUID)?.closeInventory()
+            Bukkit.getPlayer(joinUUID)?.closeInventory()
+            return@runTask
+        }
 
 
         BlackJackPlus.vault.deposit(startData.uuid,startData.coin * startData.onetip)

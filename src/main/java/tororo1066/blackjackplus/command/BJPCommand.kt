@@ -98,6 +98,12 @@ class BJPCommand : SCommandRouter() {
         addArgument(SCommandArgument().addAllowedString("ranking")).
         addRequiredPermission("bjp.log").addExplanation("獲得賞金ランキングを見る").
         setExecutor(CollectRanking()))
+
+        //bjp list
+        addCommand(SCommandObject().
+        addArgument(SCommandArgument().addAllowedString("list")).
+        addRequiredPermission("bjp.user").addExplanation("ゲームの参加状況を確認する").
+        setExecutor(BJPList()))
     }
 
 

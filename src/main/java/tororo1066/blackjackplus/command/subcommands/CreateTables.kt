@@ -8,8 +8,12 @@ import tororo1066.blackjackplus.BlackJackPlus
 //テーブル作成 権限：bjp.op
 class CreateTables : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        BlackJackPlus.createTables()
-        BlackJackPlus.sendMsg(sender,"テーブルを作成しました")
+        if (BlackJackPlus.createTables()){
+            BlackJackPlus.sendMsg(sender,"§aテーブルを作成しました")
+        }else{
+            BlackJackPlus.sendMsg(sender,"§4テーブルの作成に失敗しました")
+        }
+
         return true
     }
 }

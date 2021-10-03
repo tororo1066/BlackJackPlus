@@ -71,40 +71,38 @@ class BlackJackPlus : JavaPlugin() {
         }
 
         //db作成 /bjp createtables
-        fun createTables(){
-            mysql.execute("CREATE TABLE IF NOT EXISTS `bjp_player_log` (\n" +
-                    "\t`id` INT(10) NOT NULL AUTO_INCREMENT,\n" +
-                    "\t`uuid` VARCHAR(36) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
-                    "\t`mcid` VARCHAR(16) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
-                    "\t`win` INT(10) NULL DEFAULT NULL,\n" +
-                    "\t`draw` INT(10) NULL DEFAULT NULL,\n" +
-                    "\t`lose` INT(10) NULL DEFAULT NULL,\n" +
-                    "\t`collect` DOUBLE NULL DEFAULT NULL,\n" +
-                    "\tPRIMARY KEY (`id`) USING BTREE,\n" +
-                    "\tINDEX `uuid` (`uuid`) USING BTREE,\n" +
-                    "\tINDEX `mcid` (`mcid`) USING BTREE\n" +
-                    ")\n" +
-                    "COLLATE='utf8mb4_0900_ai_ci'\n" +
-                    "ENGINE=InnoDB\n" +
-                    ";\n")
-            mysql.execute("CREATE TABLE IF NOT EXISTS `bjp_log` (\n" +
-                    "\t`id` INT(10) NOT NULL AUTO_INCREMENT,\n" +
-                    "\t`startUUID` VARCHAR(36) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
-                    "\t`startMCID` VARCHAR(16) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
-                    "\t`joinUUID` VARCHAR(36) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
-                    "\t`joinMCID` VARCHAR(16) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
-                    "\t`tip` DOUBLE NULL DEFAULT NULL,\n" +
-                    "\t`round` INT(10) NULL DEFAULT NULL,\n" +
-                    "\t`coin` INT(10) NULL DEFAULT NULL,\n" +
-                    "\t`bet` INT(10) NULL DEFAULT NULL,\n" +
-                    "\t`time` INT(10) NULL DEFAULT NULL,\n" +
-                    "\t`startCoin` INT(10) NULL DEFAULT NULL,\n" +
-                    "\t`joinCoin` INT(10) NULL DEFAULT NULL,\n" +
-                    "\tPRIMARY KEY (`id`) USING BTREE\n" +
-                    ")\n" +
-                    "COLLATE='utf8mb4_0900_ai_ci'\n" +
-                    "ENGINE=InnoDB\n" +
-                    ";\n")
+        fun createTables(): Boolean {
+            if (!mysql.execute("CREATE TABLE IF NOT EXISTS `bjp_player_log` (\n" +
+                        "\t`id` INT(10) NOT NULL AUTO_INCREMENT,\n" +
+                        "\t`uuid` VARCHAR(36) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
+                        "\t`mcid` VARCHAR(16) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
+                        "\t`win` INT(10) NULL DEFAULT NULL,\n" +
+                        "\t`draw` INT(10) NULL DEFAULT NULL,\n" +
+                        "\t`lose` INT(10) NULL DEFAULT NULL,\n" +
+                        "\t`collect` DOUBLE NULL DEFAULT NULL,\n" +
+                        "\tPRIMARY KEY (`id`) USING BTREE,\n" +
+                        "\tINDEX `uuid` (`uuid`) USING BTREE,\n" +
+                        "\tINDEX `mcid` (`mcid`) USING BTREE\n" +
+                        ")\n" +
+                        ";\n")) return false
+            if (!mysql.execute("CREATE TABLE IF NOT EXISTS `bjp_log` (\n" +
+                        "\t`id` INT(10) NOT NULL AUTO_INCREMENT,\n" +
+                        "\t`startUUID` VARCHAR(36) NULL DEFAULT NULL,\n" +
+                        "\t`startMCID` VARCHAR(16) NULL DEFAULT NULL,\n" +
+                        "\t`joinUUID` VARCHAR(36) NULL DEFAULT NULL,\n" +
+                        "\t`joinMCID` VARCHAR(16) NULL DEFAULT NULL,\n" +
+                        "\t`tip` DOUBLE NULL DEFAULT NULL,\n" +
+                        "\t`round` INT(10) NULL DEFAULT NULL,\n" +
+                        "\t`coin` INT(10) NULL DEFAULT NULL,\n" +
+                        "\t`bet` INT(10) NULL DEFAULT NULL,\n" +
+                        "\t`time` INT(10) NULL DEFAULT NULL,\n" +
+                        "\t`startCoin` INT(10) NULL DEFAULT NULL,\n" +
+                        "\t`joinCoin` INT(10) NULL DEFAULT NULL,\n" +
+                        "\tPRIMARY KEY (`id`) USING BTREE\n" +
+                        ")\n" +
+                        ";\n")) return false
+
+            return true
         }
     }
 

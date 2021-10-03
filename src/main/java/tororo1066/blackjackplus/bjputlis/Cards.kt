@@ -55,7 +55,7 @@ object Cards {
             Bukkit.getPlayer(playerData.uuid)?.let { BlackJackPlus.sendMsg(it,"§cカードを引くスペースがありません！") }
             return false
         }
-        if (canDrawSp && Math.random() >= BlackJackPlus.BJPConfig.getDouble("gameconfig.spdrawchance")){
+        if (canDrawSp && Math.random() <= BlackJackPlus.BJPConfig.getDouble("gameconfig.spdrawchance")/100){
             SpCard().drawSpCard(playerData)
         }
 
