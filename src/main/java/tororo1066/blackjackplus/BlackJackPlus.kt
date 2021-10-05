@@ -74,8 +74,8 @@ class BlackJackPlus : JavaPlugin() {
         fun createTables(): Boolean {
             if (!mysql.execute("CREATE TABLE IF NOT EXISTS `bjp_player_log` (\n" +
                         "\t`id` INT(10) NOT NULL AUTO_INCREMENT,\n" +
-                        "\t`uuid` VARCHAR(36) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
-                        "\t`mcid` VARCHAR(16) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',\n" +
+                        "\t`uuid` VARCHAR(36) NULL DEFAULT NULL,\n" +
+                        "\t`mcid` VARCHAR(16) NULL DEFAULT NULL,\n" +
                         "\t`win` INT(10) NULL DEFAULT NULL,\n" +
                         "\t`draw` INT(10) NULL DEFAULT NULL,\n" +
                         "\t`lose` INT(10) NULL DEFAULT NULL,\n" +
