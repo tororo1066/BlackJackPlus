@@ -15,13 +15,10 @@ class CollectRanking : CommandExecutor {
             return true
         }
 
-        val str = SStringBuilder()
+        sender.sendMessage("§a§l総獲得賞金ランキング")
         for ((index,rank) in ranking.withIndex()){
-            str.gray().bold().text("${index+1}.").aqua().text("${rank.key}：").yellow().text("${BlackJackPlus.format(rank.value)}円\n")
+            sender.sendMessage("§7§l${index+1}.§b${rank.key}：§e${BlackJackPlus.format(rank.value)}円")
         }
-        sender.sendMessage("§a§l総獲得賞金ランキング\n" +
-                str.build()
-        )
         return true
     }
 }

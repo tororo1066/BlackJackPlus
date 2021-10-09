@@ -53,6 +53,7 @@ class BJPLog {
         if (rs.size == 0)return Collections.emptyList()
         val collectList = HashMap<String,Double>()
         for (result in rs){
+            if (result.getDouble("collect") < 1)continue
             collectList[result.getString("mcid")] = result.getDouble("collect")
         }
 
