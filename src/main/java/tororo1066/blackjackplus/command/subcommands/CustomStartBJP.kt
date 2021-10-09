@@ -35,6 +35,7 @@ class CustomStartBJP : CommandExecutor {
 
         if (round !in 1..10 || coin !in 5..30 || bet !in 1..10 || time !in 3..60){
             BlackJackPlus.sendMsg(sender,"§a/bjp custom [チップ1枚当たりの金額] [ラウンド数(1~10)] [チップ数(5~30)] [初期ベット数(1~10)] [1ターンの時間(3~60)]")
+            return true
         }
 
         val tip = CheckBet(args[1].toDouble()).call()
