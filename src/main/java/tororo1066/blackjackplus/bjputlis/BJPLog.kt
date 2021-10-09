@@ -31,7 +31,7 @@ class BJPLog {
         log.win = result.getInt("win")
         log.draw = result.getInt("draw")
         log.lose = result.getInt("lose")
-        log.winPer = floor(((log.win / (log.win + log.draw + log.lose) * 100).toDouble()))
+        log.winPer = floor(((log.win.toDouble() / (log.win.toDouble() + log.draw.toDouble() + log.lose.toDouble()) * 100.0)))
         log.collect = result.getDouble("collect")
         log.success = true
 
