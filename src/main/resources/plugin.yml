@@ -7,6 +7,7 @@ softdepend:
   - Man10CommonLibs
 depend:
   - Vault
+  - ProtocolLib
 
 
 commands:

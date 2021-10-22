@@ -1,5 +1,7 @@
 package tororo1066.blackjackplus
 
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.ProtocolManager
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
@@ -17,12 +19,13 @@ class BlackJackPlus : JavaPlugin() {
     companion object{
         val bjpData = HashMap<UUID,BJPGame>()
 
-        var pluginEnable = true
+        var pluginEnable = false
         var pluginPrefix = "§f[§5§lBJ§a§lP§f]§r"
         lateinit var BJPConfig : FileConfiguration
         lateinit var plugin : BlackJackPlus
         lateinit var vault : VaultAPI
         lateinit var mysql : ThreadedMySQLAPI
+        lateinit var protocolManager: ProtocolManager
 
         val enableSpCards = HashMap<Int,Int>()
         val cardCSM = ArrayList<Int>()
@@ -111,7 +114,9 @@ class BlackJackPlus : JavaPlugin() {
         BJPConfig = config
         vault = VaultAPI()
         mysql = ThreadedMySQLAPI(this)
+        protocolManager = ProtocolLibrary.getProtocolManager()
         plugin = this
+        pluginEnable = config.getBoolean("mode")
 
         getCommand("bjp")?.setExecutor(BJPCommand())
         getCommand("bjp")?.tabCompleter = BJPCommand()

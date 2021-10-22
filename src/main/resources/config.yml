@@ -114,3 +114,5 @@ cardconfig:
     23: #デスぺレーション
       enable: true
       csm: 16
+
+mode: false
