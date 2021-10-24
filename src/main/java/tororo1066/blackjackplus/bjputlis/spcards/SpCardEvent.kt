@@ -90,7 +90,7 @@ class SpCardEvent {
                 enemyData.harvest = false
             }
             23->{
-                enemyData.death = false
+                playerData.death = false
                 playerData.bet -= 100
                 enemyData.bet -= 100
             }
@@ -114,29 +114,7 @@ class SpCardEvent {
         playerData.action = BJPGame.PlayerData.Action.SPUSE
         val slotitem = playerData.inv.getItem(e.slot)
         playerData.inv.removeItem(e.slot)
-        if (Bukkit.getPlayer(playerData.uuid) != null){
-            val player = Bukkit.getPlayer(playerData.uuid)!!
-            val offhand = player.inventory.itemInOffHand.clone()
-            player.inventory.setItem(EquipmentSlot.OFF_HAND,slotitem.itemStack.apply { type = Material.TOTEM_OF_UNDYING })
-            val protocol = BlackJackPlus.protocolManager.createPacket(PacketType.Play.Server.ENTITY_STATUS)
-            protocol.integers.write(0,player.entityId)
-            protocol.bytes.write(0,EntityEffect.TOTEM_RESURRECT.data)
-            BlackJackPlus.protocolManager.sendServerPacket(player,protocol)
-            player.inventory.setItem(EquipmentSlot.OFF_HAND,offhand)
 
-        }
-        if (Bukkit.getPlayer(enemyData.uuid) != null){
-            val player = Bukkit.getPlayer(enemyData.uuid)!!
-            val offhand = player.inventory.itemInOffHand.clone()
-
-            player.inventory.setItem(EquipmentSlot.OFF_HAND,slotitem.itemStack.apply { type = Material.TOTEM_OF_UNDYING })
-            val protocol = BlackJackPlus.protocolManager.createPacket(PacketType.Play.Server.ENTITY_STATUS)
-            protocol.integers.write(0,player.entityId)
-            protocol.bytes.write(0,EntityEffect.TOTEM_RESURRECT.data)
-            BlackJackPlus.protocolManager.sendServerPacket(player,protocol)
-            player.inventory.setItem(EquipmentSlot.OFF_HAND,offhand)
-
-        }
 
         BlackJackPlus.bjpData[playerData.starter]?.allPlayerSend(slotitem.itemStack.itemMeta.displayName)
         for (lore in slotitem.itemStack.lore!!){

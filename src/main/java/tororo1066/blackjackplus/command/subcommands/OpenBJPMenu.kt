@@ -18,19 +18,19 @@ class OpenBJPMenu : CommandExecutor {
             BlackJackPlus.sendMsg(sender,"§4このコマンドはプレイヤーのみ実行できます")
             return true
         }
-        for (data in BlackJackPlus.bjpData){
-            if (data.value.playerData.containsKey(sender.uniqueId)){
-                return try {
+        try {
+            for (data in BlackJackPlus.bjpData){
+                if (data.value.playerData.containsKey(sender.uniqueId)){
                     data.value.playerData[sender.uniqueId]!!.inv.open(sender)
-                    true
-                }catch (e : UninitializedPropertyAccessException){
-                    true
+                    return true
                 }
             }
-
+        }catch (e : UninitializedPropertyAccessException){
             BlackJackPlus.sendMsg(sender,"§4データが存在しません")
             return true
         }
+
+        BlackJackPlus.sendMsg(sender,"§4データが存在しません")
         return true
     }
 }

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -23,7 +24,7 @@ public abstract class SInventory implements Listener {
 
 
     HashMap<String, Consumer<Object>> events = new HashMap<>();
-    HashMap<Integer, SInventoryItem> items = new HashMap<>();
+    ConcurrentHashMap<Integer, SInventoryItem> items = new ConcurrentHashMap<>();
 
     ArrayList<Consumer<InventoryCloseEvent>> onCloseEvents = new ArrayList<>();
     ArrayList<Consumer<InventoryCloseEvent>> onForcedCloseEvents = new ArrayList<>();

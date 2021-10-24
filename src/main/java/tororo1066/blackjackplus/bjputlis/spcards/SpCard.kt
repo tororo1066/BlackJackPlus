@@ -1,5 +1,6 @@
 package tororo1066.blackjackplus.bjputlis.spcards
 
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
@@ -33,7 +34,7 @@ class SpCard {
 
     //spカードを呼ぶ処理
     private fun callSpCard(playerData: BJPGame.PlayerData){
-        val csm = BlackJackPlus.enableSpCards[id]!!
+        val csm = BlackJackPlus.enableSpCards[id]!!.first
         when(id){
             1->{//ドローだけめんどくさい
                 val random = Random.nextInt(3..7)
@@ -136,7 +137,12 @@ class SpCard {
 
     //spカードを引く処理
     fun drawSpCard(playerData: BJPGame.PlayerData){
-        val random = BlackJackPlus.enableSpCards.keys.random()
+
+        val sum = ArrayList<Int>()
+        BlackJackPlus.enableSpCards.forEach { sum.add(it.value.second) }
+
+        val random = intRoll(BlackJackPlus.enableSpCards)
+        Bukkit.broadcastMessage(random.toString())
         id = random
         callSpCard(playerData)
 
@@ -148,10 +154,13 @@ class SpCard {
 
     }
 
+
+
     //spカードを置く処理
     fun putSpCard(playerData: BJPGame.PlayerData, id : Int){
         val loc = InventoryUtil(playerData).checkPlayerPutSpCard() ?: return
         this.id = id
+
         callSpCard(playerData)
 
         val gamedata = BlackJackPlus.bjpData[playerData.starter]?:return
@@ -161,6 +170,26 @@ class SpCard {
         gamedata.renderInventory()
 
     }
+
+    private fun intRoll(list : HashMap<Int,Pair<Int,Int>>): Int {
+        var total = 0
+        for (loop in list){
+            total+=loop.value.second
+        }
+        var random = Random.nextInt(1,total+1)
+        var retIndex = -1
+        for (i in list.values.withIndex()) {
+            if (i.value.second >= random) {
+                retIndex = i.index
+                break
+            }
+            random -= i.value.second
+        }
+
+        return list.keys.toIntArray()[retIndex]
+    }
+
+
 
 }
 

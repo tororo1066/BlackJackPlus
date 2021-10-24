@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import tororo1066.blackjackplus.Utils.MySQL.ThreadedMySQLAPI
 import tororo1066.blackjackplus.Utils.VaultAPI
 import tororo1066.blackjackplus.bjputlis.BJPListener
+import tororo1066.blackjackplus.bjputlis.CheckBet
 import tororo1066.blackjackplus.command.BJPCommand
 import java.util.*
 import kotlin.collections.ArrayList
@@ -27,7 +28,7 @@ class BlackJackPlus : JavaPlugin() {
         lateinit var mysql : ThreadedMySQLAPI
         lateinit var protocolManager: ProtocolManager
 
-        val enableSpCards = HashMap<Int,Int>()
+        val enableSpCards = HashMap<Int,Pair<Int,Int>>()
         val cardCSM = ArrayList<Int>()
         val drawAnyCSM = ArrayList<Int>()
         var invisibleCardCSM = 0
@@ -47,17 +48,18 @@ class BlackJackPlus : JavaPlugin() {
 
         //コンフィグリロード /bjp reload
         fun reloadBJPConfig(){
-            plugin.saveConfig()
+            plugin.reloadConfig()
+
             var loop = 1
             while (BJPConfig.isSet("cardconfig.spcards.$loop")){
                 if (BJPConfig.getBoolean("cardconfig.spcards.$loop.enable")){
-                    enableSpCards[loop] = BJPConfig.getInt("cardconfig.spcards.$loop.csm")
+                    enableSpCards[loop] = Pair(BJPConfig.getInt("cardconfig.spcards.$loop.csm"),BJPConfig.getInt("cardconfig.spcards.$loop.chance"))
                 }
                 loop++
             }
 
             if (enableSpCards.isEmpty()){
-                enableSpCards[1] = 0
+                enableSpCards[1] = Pair(0,1)
             }
 
             for (card in BJPConfig.getIntegerList("cardconfig.cardcsm")){
