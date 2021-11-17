@@ -15,7 +15,7 @@ import tororo1066.blackjackplus.bjputlis.spcards.SpCard
 object Cards {
 
 
-    private val cardmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardconfig.cardmaterial")?:"PAPER")
+    val cardmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardconfig.cardmaterial")?:"PAPER")
 
 
     //山札確認

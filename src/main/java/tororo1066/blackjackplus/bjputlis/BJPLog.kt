@@ -1,6 +1,10 @@
 package tororo1066.blackjackplus.bjputlis
 
+import org.bukkit.Bukkit
 import tororo1066.blackjackplus.BlackJackPlus
+import tororo1066.blackjackplus.bjputlis.AdvancementUtils.Companion.awardAdvancement
+import tororo1066.blackjackplus.bjputlis.AdvancementUtils.Companion.isDone
+import tororo1066.blackjackplus.bjputlis.advancements.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -34,6 +38,18 @@ class BJPLog {
         log.winPer = floor(((log.win.toDouble() / (log.win.toDouble() + log.draw.toDouble() + log.lose.toDouble()) * 100.0)))
         log.collect = result.getDouble("collect")
         log.success = true
+
+        val battle = log.win + log.draw + log.lose
+        val player = Bukkit.getPlayer(uuid)
+        if (player != null){
+            Bukkit.getScheduler().runTask(BlackJackPlus.plugin, Runnable {
+                if (battle >= 100 && LoginServer.isDone(player))player.awardAdvancement(HundredBattles.key)
+                if (battle >= 200 && HundredBattles.isDone(player))player.awardAdvancement(Addict.key)
+                if (battle >= 200 && log.winPer >= 60.0 && Addict.isDone(player))player.awardAdvancement(ProGamer.key)
+                if (battle >= 200 && log.collect >= 2000000 && ProGamer.isDone(player))player.awardAdvancement(TrueProGamer.key)
+            })
+        }
+
 
         return log
     }

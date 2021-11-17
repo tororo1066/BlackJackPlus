@@ -13,9 +13,13 @@ import tororo1066.blackjackplus.Utils.MySQL.MySQLAPI
 import tororo1066.blackjackplus.Utils.SInventory.SInventory
 import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem
 import tororo1066.blackjackplus.Utils.SItemStack
+import tororo1066.blackjackplus.bjputlis.AdvancementUtils.Companion.awardAdvancement
+import tororo1066.blackjackplus.bjputlis.AdvancementUtils.Companion.isDone
 import tororo1066.blackjackplus.bjputlis.Cards
 import tororo1066.blackjackplus.bjputlis.CreateGUI
+import tororo1066.blackjackplus.bjputlis.InventoryUtil
 import tororo1066.blackjackplus.bjputlis.OtherItem
+import tororo1066.blackjackplus.bjputlis.advancements.*
 import tororo1066.blackjackplus.bjputlis.spcards.SpCard
 import java.util.*
 import kotlin.collections.ArrayList
@@ -27,6 +31,7 @@ import kotlin.random.nextInt
 class BJPGame : Thread() {
 
     val playerData = LinkedHashMap<UUID,PlayerData>()
+    var customSetting = false
 
     var round = 3
     var clocktime = 30
@@ -46,6 +51,7 @@ class BJPGame : Thread() {
 
         var canSpUse = true
         var harvest = false
+        var harvestCount = 0
         var death = false
 
         lateinit var inv : SInventory
@@ -55,6 +61,8 @@ class BJPGame : Thread() {
         lateinit var starter : UUID
         lateinit var enemy : UUID
 
+
+        var spUseCount = 0
 
 
         enum class Action{
@@ -73,7 +81,7 @@ class BJPGame : Thread() {
     }
 
     //プレイヤー追加
-    fun addPlayer(p : Player, onetip : Double, coin : Int, initialbet : Int, starter : UUID){
+    fun addPlayer(p : Player, onetip : Double, coin : Int, initialbet : Int, starter : UUID, custom : Boolean){
         val data = PlayerData()
         data.uuid = p.uniqueId
         data.mcid = p.name
@@ -83,6 +91,7 @@ class BJPGame : Thread() {
         data.initialbet = initialbet
         data.bet = initialbet
         data.starter = starter
+        customSetting = custom
         playerData[p.uniqueId] = data
     }
 
@@ -90,7 +99,7 @@ class BJPGame : Thread() {
     fun addJoinPlayer(p : Player){
         val data = playerData.entries.first().value
         data.enemy = p.uniqueId
-        addPlayer(p,data.onetip,data.coin,data.initialbet,data.starter)
+        addPlayer(p,data.onetip,data.coin,data.initialbet,data.starter,customSetting)
         playerData.entries.last().value.enemy = data.uuid
     }
 
@@ -225,6 +234,21 @@ class BJPGame : Thread() {
         renderInventory()
     }
 
+    private fun showSpCardSum(uuid : UUID){
+
+        val uuidData = playerData[uuid]!!
+        val enemyData = playerData[uuidData.enemy]!!
+
+        val sum = InventoryUtil(playerData[uuid]!!).countSpCard()
+
+        enemyData.inv.setItem(45, SInventoryItem(SItemStack(Material.YELLOW_STAINED_GLASS_PANE).setDisplayName("§d${uuidData.mcid}のSPカードの数 $sum / 9").build()).clickable(false))
+
+
+        renderInventory()
+
+
+    }
+
     //時間のカウント
     private fun timeCount(time : Int){
         if (playerData.size != 2)return
@@ -279,6 +303,9 @@ class BJPGame : Thread() {
         runTask {
             Bukkit.getPlayer(startData.uuid)?.openInventory(inv)
             Bukkit.getPlayer(joinData.uuid)?.openInventory(inv)
+            if (playerData[uuid]!!.bjnumber == if (startData.uuid == uuid) count.first else count.second){
+                Bukkit.getPlayer(uuid)?.awardAdvancement(BlackJack.key)
+            }
         }
 
         sleep(5000)
@@ -326,6 +353,10 @@ class BJPGame : Thread() {
         joinData.harvest = false
         startData.canSpUse = true
         joinData.canSpUse = true
+        startData.harvestCount = 0
+        joinData.harvestCount = 0
+        startData.spUseCount = 0
+        joinData.spUseCount = 0
         val startBet = startData.bet
         val joinBet = joinData.bet
 
@@ -395,6 +426,7 @@ class BJPGame : Thread() {
             startData.inv = CreateGUI(startData, clocktime)
             joinData.inv = CreateGUI(joinData, clocktime)
         }
+
 
     }
 
@@ -467,6 +499,15 @@ class BJPGame : Thread() {
             runTask {
                 startData.inv.open(Bukkit.getPlayer(startData.uuid))
                 joinData.inv.open(Bukkit.getPlayer(joinData.uuid))
+
+                if (Bukkit.getPlayer(startData.uuid) != null){
+                    val player = Bukkit.getPlayer(startData.uuid)!!
+                    if (LoginServer.isDone(player)) player.awardAdvancement(StartGame.key)
+                }
+                if (Bukkit.getPlayer(joinData.uuid) != null){
+                    val player = Bukkit.getPlayer(joinData.uuid)!!
+                    if (LoginServer.isDone(player)) player.awardAdvancement(StartGame.key)
+                }
             }
             if (round == 1){
                 SpCard().drawSpCard(startData)
@@ -495,6 +536,8 @@ class BJPGame : Thread() {
             fillAction(turn)
 
             showCardSum()
+            showSpCardSum(startData.uuid)
+            showSpCardSum(joinData.uuid)
 
             while (!startData.through || !joinData.through){
                 val turnData = playerData[turn]!!
@@ -536,14 +579,22 @@ class BJPGame : Thread() {
                 }
 
                 showCardSum()
+                showSpCardSum(turn)
 
                 if (turnData.action == PlayerData.Action.SPUSE){
                     replaceAction(turn)
+                    runTask {
+                        if (Bukkit.getPlayer(turn) != null){
+                            val player = Bukkit.getPlayer(turn)!!
+                            if (StartGame.isDone(player)) player.awardAdvancement(UseSp.key)
+                        }
+                    }
                     sleep(5000)
                     turnData.action = PlayerData.Action.Nothing
                     playerData[turnData.enemy]!!.through = false
                     fillAction(turn)
                     showCardSum()
+                    showSpCardSum(turn)
                     continue
                 }
 
@@ -570,7 +621,30 @@ class BJPGame : Thread() {
 
             val later = gameLaterSetting(gameEnd)
 
-            if (!later)break
+            if (!later){
+                runTask {
+                    if (customSetting)return@runTask
+                    if (startData.coin == 0 && Bukkit.getPlayer(joinData.uuid) != null){
+                        val player = Bukkit.getPlayer(joinData.uuid)!!
+                        if (BlackJack.isDone(player))player.awardAdvancement(PerfectGame.key)
+                        if (round == 1 && PerfectGame.isDone(player)){
+                            player.awardAdvancement(UltimateGame.key)
+                        }
+                        return@runTask
+                    }
+
+                    if (joinData.coin == 0 && Bukkit.getPlayer(startData.uuid) != null){
+                        val player = Bukkit.getPlayer(startData.uuid)!!
+                        if (BlackJack.isDone(player))player.awardAdvancement(PerfectGame.key)
+                            if (round == 1 && PerfectGame.isDone(player)){
+                                player.awardAdvancement(UltimateGame.key)
+                            }
+                        return@runTask
+                    }
+
+                }
+                break
+            }
 
             invSetUp(false)
 
@@ -588,7 +662,16 @@ class BJPGame : Thread() {
         runTask {
             Bukkit.getPlayer(startUUID)?.closeInventory()
             Bukkit.getPlayer(joinUUID)?.closeInventory()
-            return@runTask
+            if (!customSetting){
+                if (startData.coin > startData.initialcoin && Bukkit.getPlayer(startUUID) != null){
+                    val player = Bukkit.getPlayer(startUUID)!!
+                    if (UseSp.isDone(player))player.awardAdvancement(WinGame.key)
+                }
+                if (joinData.coin > joinData.initialcoin && Bukkit.getPlayer(joinUUID) != null){
+                    val player = Bukkit.getPlayer(joinUUID)!!
+                    if (UseSp.isDone(player))player.awardAdvancement(WinGame.key)
+                }
+            }
         }
 
 

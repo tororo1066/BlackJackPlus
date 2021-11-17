@@ -1,19 +1,15 @@
 package tororo1066.blackjackplus
 
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.ProtocolManager
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import tororo1066.blackjackplus.Utils.MySQL.ThreadedMySQLAPI
 import tororo1066.blackjackplus.Utils.VaultAPI
+import tororo1066.blackjackplus.bjputlis.AdvancementUtils
 import tororo1066.blackjackplus.bjputlis.BJPListener
-import tororo1066.blackjackplus.bjputlis.CheckBet
 import tororo1066.blackjackplus.command.BJPCommand
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class BlackJackPlus : JavaPlugin() {
 
@@ -26,7 +22,6 @@ class BlackJackPlus : JavaPlugin() {
         lateinit var plugin : BlackJackPlus
         lateinit var vault : VaultAPI
         lateinit var mysql : ThreadedMySQLAPI
-        lateinit var protocolManager: ProtocolManager
 
         val enableSpCards = HashMap<Int,Pair<Int,Int>>()
         val cardCSM = ArrayList<Int>()
@@ -116,15 +111,17 @@ class BlackJackPlus : JavaPlugin() {
         BJPConfig = config
         vault = VaultAPI()
         mysql = ThreadedMySQLAPI(this)
-        protocolManager = ProtocolLibrary.getProtocolManager()
         plugin = this
         pluginEnable = config.getBoolean("mode")
 
         getCommand("bjp")?.setExecutor(BJPCommand())
         getCommand("bjp")?.tabCompleter = BJPCommand()
         server.pluginManager.registerEvents(BJPListener(),this)
+        server.pluginManager.registerEvents(AdvancementUtils(),this)
 
         reloadBJPConfig()
+
+        AdvancementUtils().loadAdvancements()
 
     }
 

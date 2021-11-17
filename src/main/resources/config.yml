@@ -132,10 +132,10 @@ cardconfig:
     22: #ハーヴェスト
       enable: true
       csm: 29
-      chance: 25
+      chance: 50
     23: #デスぺレーション
       enable: true
       csm: 16
-      chance: 25
+      chance: 50
 
 mode: false

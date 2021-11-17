@@ -50,7 +50,7 @@ class StartBJP : CommandExecutor {
         BlackJackPlus.bjpData[sender.uniqueId] = BJPGame()
         BlackJackPlus.bjpData[sender.uniqueId]!!.setGameConfig(BlackJackPlus.BJPConfig.getInt("gameconfig.round",3),BlackJackPlus.BJPConfig.getInt("gameconfig.clocktime",30))
         BlackJackPlus.bjpData[sender.uniqueId]!!.
-        addPlayer(sender,bet,coin,BlackJackPlus.BJPConfig.getInt("gameconfig.bet",2),sender.uniqueId)
+        addPlayer(sender,bet,coin,BlackJackPlus.BJPConfig.getInt("gameconfig.bet",2),sender.uniqueId,false)
         BlackJackPlus.bjpData[sender.uniqueId]!!.start()
         return true
     }

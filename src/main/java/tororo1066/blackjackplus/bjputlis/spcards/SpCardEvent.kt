@@ -1,23 +1,27 @@
 package tororo1066.blackjackplus.bjputlis.spcards
 
-import com.comphenix.protocol.PacketType
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.Sound
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import tororo1066.blackjackplus.BJPGame
 import tororo1066.blackjackplus.BlackJackPlus
 import tororo1066.blackjackplus.Utils.SInventory.SInventoryItem
+import tororo1066.blackjackplus.bjputlis.AdvancementUtils.Companion.awardAdvancement
+import tororo1066.blackjackplus.bjputlis.AdvancementUtils.Companion.isDone
 import tororo1066.blackjackplus.bjputlis.Cards
 import tororo1066.blackjackplus.bjputlis.InventoryUtil
+import tororo1066.blackjackplus.bjputlis.advancements.*
 import kotlin.random.Random
 
 class SpCardEvent {
 
     //数字nbt取得
-    private fun getNBT(item : SInventoryItem,nbt : String): Int? {
-        return item.itemStack.itemMeta.persistentDataContainer[NamespacedKey(BlackJackPlus.plugin,nbt), PersistentDataType.INTEGER]
+    private fun getNBT(item : SInventoryItem?,nbt : String): Int? {
+        return item?.itemStack?.itemMeta?.persistentDataContainer?.get(NamespacedKey(BlackJackPlus.plugin,nbt), PersistentDataType.INTEGER)
     }
 
     //spカードを使える条件に当てはまっているか確認
@@ -110,6 +114,7 @@ class SpCardEvent {
 
     //spカード使用成功時の処理 必ず通す
     private fun spTask(e : InventoryClickEvent,playerData: BJPGame.PlayerData): SInventoryItem {
+        playerData.spUseCount += 1
         val enemyData = BlackJackPlus.bjpData[playerData.starter]!!.playerData[playerData.enemy]!!
         playerData.action = BJPGame.PlayerData.Action.SPUSE
         val slotitem = playerData.inv.getItem(e.slot)
@@ -122,7 +127,16 @@ class SpCardEvent {
         }
         BlackJackPlus.bjpData[playerData.starter]?.allPlaySound(Sound.ITEM_TOTEM_USE,0.8f,1f)
         InventoryUtil(playerData).sortSpCard()
-        if (playerData.harvest) SpCard().drawSpCard(playerData)
+        if (playerData.harvest) {
+            SpCard().drawSpCard(playerData)
+            playerData.harvestCount += 1
+            if (playerData.harvestCount == 5) {
+                playerData.harvestCount = 0
+                playerData.harvest = false
+                BlackJackPlus.bjpData[playerData.starter]!!.allPlayerSend("§d${playerData.mcid}の§cハーヴェストの恩恵が切れてしまった...")
+            }
+
+        }
         playerData.inv.renderInventory()
         playerData.inv.close(Bukkit.getPlayer(playerData.uuid))
         enemyData.inv.close(Bukkit.getPlayer(enemyData.uuid))
@@ -130,6 +144,12 @@ class SpCardEvent {
         Bukkit.getScheduler().runTask(BlackJackPlus.plugin, Runnable {
             playerData.inv.open(Bukkit.getPlayer(playerData.uuid))
             enemyData.inv.open(Bukkit.getPlayer(enemyData.uuid))
+            if (playerData.spUseCount == 10){
+                val player = Bukkit.getPlayer(playerData.uuid)?:return@Runnable
+                if (UseSp.isDone(player))player.awardAdvancement(TenSpUse.key)
+            }
+
+
         })
         if (slotitem != null)
             return slotitem
@@ -606,6 +626,18 @@ class SpCardEvent {
         val gameData = BlackJackPlus.bjpData[playerData.starter]!!
         val enemyData = gameData.playerData[playerData.enemy]!!
 
+        for (i in 20..24){
+            if (getNBT(playerData.inv.getItem(i),"sp") == 23){
+                Bukkit.getScheduler().runTask(BlackJackPlus.plugin, Runnable {
+                    val player = Bukkit.getPlayer(playerData.uuid)
+                    if (player != null){
+                        if (DeathGame.isDone(player)) player.awardAdvancement(DeathCombo.key)
+                    }
+                })
+                break
+            }
+        }
+
         while (playerData.inv.getItem(15) != null){
             breakSpCard(playerData,15)
         }
@@ -707,6 +739,45 @@ class SpCardEvent {
         }
 
         spTask(e, playerData)
+        if (Bukkit.getPlayer(playerData.uuid) != null){
+            val player = Bukkit.getPlayer(playerData.uuid)!!
+            Bukkit.getScheduler().runTask(BlackJackPlus.plugin, Runnable {
+                if (UseSp.isDone(player)) player.awardAdvancement(DeathGame.key)
+            })
+        }
+
+        for (i in 15 downTo 11){
+            if (getNBT(playerData.inv.getItem(i),"sp") == 23){
+                Bukkit.getScheduler().runTask(BlackJackPlus.plugin, Runnable {
+                    val player = Bukkit.getPlayer(playerData.uuid)
+                    if (player != null){
+                        if (DeathGame.isDone(player)) player.awardAdvancement(DeadLock.key)
+                    }
+
+                    val player2 = Bukkit.getPlayer(enemyData.uuid)
+                    if (player2 != null){
+                        if (DeathGame.isDone(player2)) player2.awardAdvancement(DeadLock.key)
+                    }
+
+                })
+                break
+            }
+        }
+
+        for (i in 20..24){
+            if (getNBT(playerData.inv.getItem(i),"sp") == 20){
+                Bukkit.getScheduler().runTask(BlackJackPlus.plugin, Runnable {
+                    val player = Bukkit.getPlayer(playerData.uuid)
+                    if (player != null){
+                        if (DeathGame.isDone(player)) player.awardAdvancement(DeathCombo.key)
+                    }
+                })
+                break
+            }
+        }
+
+
+
 
         SpCard().putSpCard(playerData,23)
 

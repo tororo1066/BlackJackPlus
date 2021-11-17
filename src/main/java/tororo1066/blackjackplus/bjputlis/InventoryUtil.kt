@@ -1,8 +1,6 @@
 package tororo1066.blackjackplus.bjputlis
 
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import tororo1066.blackjackplus.BJPGame
 import tororo1066.blackjackplus.BlackJackPlus
@@ -73,6 +71,15 @@ class InventoryUtil(val playerData: BJPGame.PlayerData) {
 
         playerData.inv.renderInventory()
 
+    }
+
+    fun countSpCard(): Int {
+        var count = 0
+        for (i in 36..44){
+            if (playerData.inv.getItem(i) == null)continue
+            count += 1
+        }
+        return count
     }
 
     //場に出てるspカードのソート

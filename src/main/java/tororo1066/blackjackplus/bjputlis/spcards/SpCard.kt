@@ -1,6 +1,5 @@
 package tororo1066.blackjackplus.bjputlis.spcards
 
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
@@ -19,7 +18,9 @@ class SpCard {
     lateinit var spCard : SInventoryItem
     lateinit var name : String
     lateinit var description : List<String>
-    private val spmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardconfig.spcardmaterial")?:"PAPER")
+    companion object{
+        val spmaterial = Material.valueOf(BlackJackPlus.BJPConfig.getString("cardconfig.spcardmaterial")?:"PAPER")
+    }
     val event = SpCardEvent()
 
     //spカード生成処理
@@ -125,7 +126,7 @@ class SpCard {
             }
 
             22->{
-                generateSpCard("§6ハーヴェスト", listOf("§e場に置かれている間、SPカードを使う度にSPカードを1枚引く。"),id,csm) { event.harvest(it,playerData) }
+                generateSpCard("§6ハーヴェスト", listOf("§e場に置かれている間、SPカードを使う度にSPカードを1枚引く。","5回引くと効果が切れてしまう。"),id,csm) { event.harvest(it,playerData) }
             }
 
             23->{
@@ -138,11 +139,7 @@ class SpCard {
     //spカードを引く処理
     fun drawSpCard(playerData: BJPGame.PlayerData){
 
-        val sum = ArrayList<Int>()
-        BlackJackPlus.enableSpCards.forEach { sum.add(it.value.second) }
-
         val random = intRoll(BlackJackPlus.enableSpCards)
-        Bukkit.broadcastMessage(random.toString())
         id = random
         callSpCard(playerData)
 
@@ -186,7 +183,7 @@ class SpCard {
             random -= i.value.second
         }
 
-        return list.keys.toIntArray()[retIndex]
+        return ArrayList<Int>(list.keys)[retIndex]
     }
 
 

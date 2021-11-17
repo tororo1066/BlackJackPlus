@@ -9,6 +9,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tororo1066.blackjackplus.BlackJackPlus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +109,7 @@ public abstract class SCommandRouter implements @Nullable CommandExecutor, @Null
             if(obj.hasPermission((Player) data.sender)) data.sender.sendMessage(obj.helpText(data.label, "§d"));
         }
         data.sender.sendMessage("§e===================================");
+        data.sender.sendMessage("§c§l" + "Version：" + BlackJackPlus.plugin.getDescription().getVersion());
         data.sender.sendMessage("§lコマンドクリックで情報表示");
         data.sender.sendMessage("§bPlugin Created By tororo_1066 §c(API Created By Sho0)");
     }

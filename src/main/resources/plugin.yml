@@ -1,13 +1,10 @@
 name: BlackJackPlus
-version: 1.0
+version: 1.1
 main: tororo1066.blackjackplus.BlackJackPlus
 api-version: 1.17
 
-softdepend:
-  - Man10CommonLibs
 depend:
   - Vault
-  - ProtocolLib
 
 
 commands:
