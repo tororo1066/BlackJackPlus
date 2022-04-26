@@ -791,6 +791,19 @@ class SpCardEvent {
 
     }
 
+    fun happynass(e: InventoryClickEvent, playerData: BJPGame.PlayerData){
+        if (!isBJPTable(e,playerData))return
+
+        spTask(e, playerData)
+
+
+        val gameData = BlackJackPlus.bjpData[playerData.starter]!!
+
+        SpCard().drawSpCard(playerData)
+        SpCard().drawSpCard(gameData.playerData[playerData.enemy]!!)
+
+    }
+
 
 
 

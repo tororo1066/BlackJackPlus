@@ -126,11 +126,14 @@ class SpCard {
             }
 
             22->{
-                generateSpCard("§6ハーヴェスト", listOf("§e場に置かれている間、SPカードを使う度にSPカードを1枚引く。","5回引くと効果が切れてしまう。"),id,csm) { event.harvest(it,playerData) }
+                generateSpCard("§6ハーヴェスト", listOf("§e場に置かれている間、SPカードを使う度にSPカードを1枚引く。","§e5回引くと効果が切れてしまう。"),id,csm) { event.harvest(it,playerData) }
             }
 
             23->{
                 generateSpCard("§6デスぺレーション", listOf("§e場に置かれている間、互いの賭け数が100上がる。","§eまた、相手はカードを引けない。"),id,csm) { event.desperation(it,playerData) }
+            }
+            24->{
+                generateSpCard("§6ハピネス", listOf("§eお互いにSPカードを1枚引く。"),id,csm) { event.happynass(it,playerData) }
             }
         }
 
