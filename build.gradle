@@ -8,6 +8,7 @@ targetCompatibility = '16'
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         name = 'papermc-repo'
         url = 'https://papermc.io/repo/repository/maven-public/'
@@ -15,6 +16,9 @@ repositories {
     maven {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        url 'https://repo1.maven.org/maven2/'
     }
 }
 
